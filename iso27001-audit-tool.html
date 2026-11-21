@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISO/IEC 27001:2022 Audit Toolkit</title>
+<style>
+:root{--navy:#16324f;--navy2:#1e3a5f;--blue:#2563eb;--ink:#1e293b;--mut:#64748b;--line:#dbe3ee;--bg:#f2f5f9;--card:#fff;
+--ok:#16a34a;--okbg:#e7f6ec;--minor:#d97706;--minorbg:#fdf3e3;--major:#dc2626;--majorbg:#fdeaea;
+--obs:#0369a1;--obsbg:#e3f0fa;--ofi:#0d9488;--ofibg:#e0f2ef;--na:#64748b;--nabg:#eef1f5;--rad:10px}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+[hidden]{display:none!important}
+/* header + tabs */
+header.app{background:var(--navy);color:#fff;padding:10px clamp(12px,3vw,24px);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{font-weight:700;font-size:clamp(14px,2.4vw,18px);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.brand .logo{width:32px;height:32px;border-radius:8px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:10px;font-weight:800;letter-spacing:.5px;flex:none}
+.projtag{font-weight:400;font-size:13px;color:#c8d7ea}
+.hspace{flex:1}
+.savestate{font-size:12px;color:#a9c1dd}
+nav.tabs{position:sticky;top:0;z-index:25;background:#fff;border-bottom:1px solid var(--line);display:flex;gap:4px;padding:6px clamp(12px,3vw,24px);flex-wrap:wrap;align-items:center}
+.tabbtn{border:1px solid transparent;background:none;padding:8px 14px;border-radius:9px;font:inherit;font-weight:600;color:#475569;cursor:pointer}
+.tabbtn:hover{background:#eef3fa}
+.tabbtn.active{background:var(--navy);color:#fff}
+.tcount{background:#e2e8f0;color:#33415c;border-radius:999px;padding:1px 7px;font-size:11.5px;font-weight:700;margin-left:4px}
+.tabbtn.active .tcount{background:rgba(255,255,255,.25);color:#fff}
+main{max-width:1160px;margin:0 auto;padding:clamp(12px,3vw,24px)}
+footer.appfoot{max-width:1160px;margin:4px auto 30px;padding:0 clamp(12px,3vw,24px);color:var(--mut);font-size:12.5px}
+/* cards & forms */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rad);padding:16px clamp(12px,2.5vw,20px);margin-bottom:16px;box-shadow:0 1px 2px rgba(22,50,79,.05)}
+.card h2{margin:0 0 4px;font-size:17px;color:var(--navy)}
+.card h3{margin:16px 0 8px;font-size:14px;color:var(--navy2)}
+.sub{color:var(--mut);font-size:13.5px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.f label,.fld label{display:block;font-size:11.5px;font-weight:700;color:#33415c;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:66px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #93b4f7;border-color:var(--blue)}
+input:disabled{background:#f1f5f9;color:#94a3b8}
+.btn{border:1px solid var(--line);background:#fff;color:#33415c;border-radius:9px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{border-color:#b9c6d8;background:#f6f9fc}
+.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.primary:hover{background:#1d4066}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.danger{color:#b91c1c;border-color:#f3bcbc}
+.btn.danger:hover{background:#fdf0f0}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:7px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip input{position:absolute;opacity:0;width:0;height:0}
+.chip span{display:inline-block;border:1.5px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600;color:#475569;cursor:pointer;user-select:none;background:#fff}
+.chip input:checked+span{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip input:focus-visible+span{outline:2px solid #93b4f7}
+.scopenote{margin-top:12px;font-size:13.5px;color:var(--navy2);background:#eef3fa;border:1px solid #d7e3f4;border-radius:8px;padding:9px 12px}
+/* tables */
+.tblw{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th{background:#f0f4fa;text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;color:#33415c;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid #edf1f7;vertical-align:top;font-size:13.5px}
+td.mono,.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;font-weight:700;color:var(--navy);white-space:nowrap}
+td.empty{color:var(--mut);text-align:center;padding:18px}
+tr:hover td{background:#fafcfe}
+td select,td input,td textarea{padding:5px 7px;font-size:13px;border-radius:6px}
+td textarea{min-height:44px}
+.del{border:none;background:none;color:#b91c1c;font-size:15px;cursor:pointer;padding:4px}
+/* plan check banner */
+.plancheck{border-left:5px solid var(--ok)}
+.plancheck.warn{border-left-color:var(--minor)}
+.plancheck ul{margin:8px 0 2px;padding-left:18px;color:#475569;font-size:13.5px}
+/* statuses */
+.st-conform{--c:var(--ok);--cb:var(--okbg)} .st-minor{--c:var(--minor);--cb:var(--minorbg)}
+.st-major{--c:var(--major);--cb:var(--majorbg)} .st-obs{--c:var(--obs);--cb:var(--obsbg)}
+.st-ofi{--c:var(--ofi);--cb:var(--ofibg)} .st-na{--c:var(--na);--cb:var(--nabg)}
+.pill{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:999px;padding:3px 9px;font-size:11.5px;font-weight:700;cursor:pointer;user-select:none;background:#fff;color:#64748b}
+.pill:hover{border-color:#94a3b8}
+.pill.sel{background:var(--c,var(--navy));border-color:var(--c,var(--navy));color:#fff}
+.badge{display:inline-block;background:var(--cb,#eef1f5);color:var(--c,var(--mut));border-radius:6px;padding:2px 8px;font-size:11.5px;font-weight:700;white-space:nowrap}
+/* audit rows */
+.aitem{background:#fff;border:1px solid var(--line);border-left:5px solid var(--line);border-radius:9px;margin-bottom:8px}
+.aitem.st-conform{border-left-color:var(--ok)} .aitem.st-minor{border-left-color:var(--minor)}
+.aitem.st-major{border-left-color:var(--major)} .aitem.st-obs{border-left-color:var(--obs)}
+.aitem.st-ofi{border-left-color:var(--ofi)} .aitem.st-na{border-left-color:var(--na)}
+.ahead{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;cursor:pointer}
+.aitem .ahead{cursor:default}
+.ahead.tgl{cursor:pointer}
+.ref{font-weight:800;color:var(--navy);min-width:40px;font-size:13.5px;padding-top:2px}
+.atitle{flex:1;min-width:150px}
+.atitle b{font-size:14px}
+.hint{display:block;color:var(--mut);font-size:12.5px;margin-top:2px}
+.apills{display:flex;gap:4px;flex-wrap:wrap;max-width:420px;justify-content:flex-end}
+.chev{border:none;background:none;color:var(--mut);font-size:14px;cursor:pointer;padding:4px 2px;flex:none}
+.adetail{padding:2px 14px 14px 62px;border-top:1px dashed var(--line)}
+.adetail.hide{display:none}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.fld.wide{grid-column:1/-1}
+.arow{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+/* meters, stats, chart */
+.meter{height:9px;background:#e2e8f0;border-radius:999px;overflow:hidden;flex:1}
+.meter i{display:block;height:100%;border-radius:999px;background:var(--blue)}
+.pbar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:13px;color:#33415c}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin:14px 0}
+.stat{border:1px solid var(--line);border-radius:10px;padding:12px 8px;text-align:center;background:#fff}
+.stat b{display:block;font-size:clamp(20px,4vw,26px);color:var(--navy)}
+.stat span{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.stat.alert b{color:var(--major)} .stat.warn b{color:var(--minor)} .stat.good b{color:var(--ok)}
+.bar{display:flex;align-items:center;gap:10px;margin:7px 0}
+.bar .bl{width:190px;font-size:13px;color:#33415c;flex:none;font-weight:600}
+.bar .track{flex:1;display:flex;height:16px;background:#eef1f5;border-radius:6px;overflow:hidden}
+.bar .seg{height:100%}
+.bar .bv{width:56px;text-align:right;font-size:12px;color:var(--mut);flex:none}
+.seg-conform{background:var(--ok)} .seg-minor{background:var(--minor)} .seg-major{background:var(--major)}
+.seg-obs{background:var(--obs)} .seg-ofi{background:var(--ofi)} .seg-na{background:#94a3b8}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* mini buttons, misc */
+.mini{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.mbtn{border:none;background:#fff;padding:4px 10px;font:inherit;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer}
+.mbtn+.mbtn{border-left:1px solid var(--line)}
+.mbtn.sel{background:var(--navy);color:#fff}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar select,.toolbar input{width:auto;min-width:130px}
+.segctl{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.segctl button{border:none;background:#fff;padding:7px 13px;font:inherit;font-size:13.5px;font-weight:600;color:#475569;cursor:pointer}
+.segctl button.on{background:var(--navy);color:#fff}
+.addrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.addrow input{flex:1;min-width:200px;width:auto}
+.mut{color:var(--mut);font-size:12.5px}
+ul.findlist{margin:6px 0;padding-left:0;list-style:none}
+ul.findlist li{border-left:4px solid var(--c,#cbd5e1);background:var(--cb,#f8fafc);border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:7px;font-size:13.5px}
+ul.findlist li b.t{color:var(--navy)}
+/* modal & toast */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:60;display:grid;place-items:center;padding:16px}
+.mbox{background:#fff;border-radius:14px;max-width:640px;width:100%;max-height:85vh;overflow:auto;padding:22px 24px}
+.mbox h3{margin:0 0 10px;color:var(--navy)}
+.mbox ol li,.mbox ul li{margin-bottom:7px;font-size:14px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:600;z-index:80;box-shadow:0 6px 20px rgba(15,23,42,.3);max-width:90vw;text-align:center}
+@keyframes flashrow{0%{background:#fff3c4}100%{background:transparent}}
+tr.flash td{animation:flashrow 2.2s ease-out}
+@media (max-width:640px){
+ .ahead{flex-wrap:wrap}
+ .apills{width:100%;justify-content:flex-start;max-width:none}
+ .adetail{padding-left:14px}
+ .agrid{grid-template-columns:1fr}
+ .bar .bl{width:112px;font-size:12px}
+ th,td{padding:6px}
+}
+</style>
+</head>
+<body>
+<header class="app">
+ <div class="brand"><span class="logo">ISO</span> 27001:2022 Audit Toolkit <span id="projTag" class="projtag"></span></div>
+ <div class="hspace"></div>
+ <span id="saveState" class="savestate"></span>
+ <button class="btn sm" id="btnDemo" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff">Load demo</button>
+ <button class="btn sm" id="btnImport" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff">Import</button>
+ <button class="btn sm" id="btnExportJson" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff">Export project</button>
+ <button class="btn sm danger" id="btnNew">New audit</button>
+ <input type="file" id="fileImport" accept="application/json,.json" hidden>
+</header>
+<nav class="tabs" role="tablist">
+ <button class="tabbtn active" data-tab="plan">1 · Plan</button>
+ <button class="tabbtn" data-tab="audit">2 · Audit</button>
+ <button class="tabbtn" data-tab="actions">3 · Actions <span class="tcount" id="cntActions">0</span></button>
+ <button class="tabbtn" data-tab="report">4 · Report</button>
+ <div class="hspace"></div>
+ <button class="btn sm" id="btnHelp">? Help</button>
+</nav>
+<main>
+<!-- ===== PLAN ===== -->
+<section id="sec-plan">
+ <div class="card">
+  <h2>1 · Audit plan — engagement details</h2>
+  <p class="sub">Define who is audited, by whom, when and against what. Everything entered here feeds the report cover, headers and methodology sections. Progress is saved automatically in this browser.</p>
+  <div class="grid">
+   <div class="f"><label>Auditee / company name *</label><input id="m_company" placeholder="e.g. Meridian Cloud Services Ltd."></div>
+   <div class="f"><label>Industry / sector</label><input id="m_industry" placeholder="e.g. SaaS / financial services / manufacturing"></div>
+   <div class="f"><label>Audit reference no.</label><input id="m_ref" placeholder="e.g. IA-2026-001"></div>
+   <div class="f"><label>Audit type</label><select id="m_type">
+     <option>Internal audit</option><option>Supplier / third-party audit</option><option>Certification audit — Stage 1</option>
+     <option>Certification audit — Stage 2</option><option>Surveillance audit</option><option>Recertification audit</option>
+     <option>Gap assessment / readiness review</option></select></div>
+   <div class="f"><label>Sites / locations in scope</label><input id="m_sites" placeholder="e.g. London HQ; Frankfurt DC; AWS eu-west-2"></div>
+   <div class="f"><label>Audit start date</label><input type="date" id="m_start"></div>
+   <div class="f"><label>Audit end date</label><input type="date" id="m_end"></div>
+   <div class="f"><label>Lead auditor *</label><input id="m_lead" placeholder="Name / certification"></div>
+   <div class="f"><label>Audit team</label><input id="m_team" placeholder="Names and areas"></div>
+   <div class="f"><label>Report date</label><input type="date" id="m_reportDate"></div>
+   <div class="f"><label>Report classification</label><select id="m_conf"><option>Confidential</option><option>Strictly confidential</option><option>Internal use only</option><option>Public</option></select></div>
+   <div class="f"><label>Report distribution</label><input id="m_distr" placeholder="Who receives the report"></div>
+  </div>
+ </div>
+ <div class="card">
+  <h2>ISMS scope statement</h2>
+  <p class="sub">The auditee's declared ISMS scope (clause 4.3) that this audit covers — what it covers, where, and any exclusions.</p>
+  <textarea id="m_scope" placeholder="e.g. Design, development and operation of the ACME SaaS platform and supporting corporate IT services, delivered from the London office and cloud infrastructure hosted in AWS eu-west-2."></textarea>
+ </div>
+ <div class="card">
+  <h2>Audit objectives</h2>
+  <p class="sub">Why this audit is being performed — e.g. verify conformity ahead of certification, check corrective-action effectiveness, satisfy the internal-audit programme requirement.</p>
+  <textarea id="m_objectives" placeholder="e.g. Assess conformity with ISO/IEC 27001:2022 ahead of the Stage 2 certification audit; verify that controls operate effectively; identify improvement opportunities."></textarea>
+ </div>
+ <div class="card">
+  <h2>Audit scope — select what will be audited</h2>
+  <p class="sub">Choose the management-system requirement sections (clauses 4–10) and the Annex A control themes for this audit. The Audit tab follows exactly this selection.</p>
+  <h3>Management system requirements (mandatory clauses)</h3>
+  <div class="chips" id="scopeSecs"></div>
+  <h3>Annex A control themes (2022)</h3>
+  <div class="chips" id="scopeThemes"></div>
+  <div class="scopenote" id="scopeNote"></div>
+ </div>
+ <div class="card">
+  <h2>Statement of Applicability — Annex A (93 controls)</h2>
+  <p class="sub">For every control in the selected themes, decide whether it applies to the auditee. Controls marked “No” are excluded from the audit — a justification is then expected (as in the auditee's SoA).</p>
+  <div class="toolbar">
+   <select id="soaTheme"><option value="all">All themes</option><option value="org">A.5 Organizational</option><option value="ppl">A.6 People</option><option value="phy">A.7 Physical</option><option value="tech">A.8 Technological</option></select>
+   <input id="soaSearch" placeholder="Search control…">
+   <button class="btn sm" id="soaAllYes">Visible → applicable</button>
+   <button class="btn sm" id="soaAllNo">Visible → N/A</button>
+   <span class="mut" id="soaStats"></span>
+  </div>
+  <div class="tblw"><table><thead><tr><th>Ref</th><th>Theme</th><th>Control</th><th>Applicable?</th><th>Justification / notes</th></tr></thead><tbody id="soaBody"></tbody></table></div>
+ </div>
+ <div class="card">
+  <h2>Document &amp; information request (pre-audit)</h2>
+  <p class="sub">Standard ISMS documents to request before fieldwork. Tick what has been received; add auditee-specific items as needed. Receipts are summarised in the report.</p>
+  <div class="tblw"><table><thead><tr><th style="width:52%">Document / information</th><th>Received</th><th>Notes (version, date received, owner…)</th></tr></thead><tbody id="docsBody"></tbody></table></div>
+  <div class="addrow"><input id="docNew" placeholder="Add a custom document request…"><button class="btn" id="docAddBtn">Add item</button></div>
+ </div>
+ <div class="btnrow"><button class="btn primary" id="btnGoAudit">Plan saved automatically — continue to Audit →</button></div>
+</section>
+<!-- ===== AUDIT ===== -->
+<section id="sec-audit" hidden>
+ <div class="card plancheck" id="planCheck"></div>
+ <div class="card">
+  <h2>Audit execution</h2>
+  <p class="sub">Work through the planned items. For each one set a result, then open it (▸) to record evidence, remarks, auditor and date. Findings can be turned into corrective actions with one click.</p>
+  <div class="toolbar">
+   <div class="segctl"><button id="modeClauses">Clauses 4–10</button><button id="modeControls" class="on">Annex A controls</button></div>
+   <select id="audTheme"><option value="all">All themes</option><option value="org">A.5 Organizational</option><option value="ppl">A.6 People</option><option value="phy">A.7 Physical</option><option value="tech">A.8 Technological</option></select>
+   <select id="audStatus"></select>
+   <input id="audSearch" placeholder="Search ref / title / evidence…">
+   <label class="mut" style="display:flex;align-items:center;gap:5px"><input type="checkbox" id="audHideDone" style="width:auto"> Hide audited</label>
+   <button class="btn sm" id="audExpand">Expand all</button>
+   <button class="btn sm" id="audCollapse">Collapse all</button>
+  </div>
+  <div id="audProgress"></div>
+ </div>
+ <div id="audList"></div>
+</section>
+<!-- ===== ACTIONS ===== -->
+<section id="sec-actions" hidden>
+ <div class="card">
+  <h2>Corrective actions &amp; observations register</h2>
+  <p class="sub">Every nonconformity, observation and improvement opportunity can carry a tracked action: owner, due date, priority and verification of effectiveness (clause 10.2). Edit directly in the table.</p>
+  <div class="btnrow" style="margin:0 0 12px">
+   <button class="btn primary" id="actSuggest">⚡ Suggest actions from findings</button>
+   <button class="btn" id="actAdd">+ Add action manually</button>
+  </div>
+  <div class="tblw"><table>
+   <thead><tr><th>Ref</th><th>Source</th><th>Type</th><th style="width:20%">Finding / requirement</th><th style="width:20%">Corrective action</th><th>Owner</th><th>Due</th><th>Priority</th><th>Status</th><th>Verification of effectiveness</th><th></th></tr></thead>
+   <tbody id="actBody"></tbody></table></div>
+ </div>
+</section>
+<!-- ===== REPORT ===== -->
+<section id="sec-report" hidden>
+ <div class="card">
+  <h2>Audit results &amp; report generation</h2>
+  <p class="sub">Live summary of the audit. Generate a formal PDF audit report (cover, executive summary, methodology, findings, Annex A results, corrective-action plan, conclusion &amp; sign-off) and a full Excel workbook (overview, summary, clause results, all 93 controls, actions, SoA, document request).</p>
+  <div class="btnrow" style="margin:0 0 6px">
+   <button class="btn primary" id="btnPdf">📄 Generate PDF report</button>
+   <button class="btn blue" id="btnXlsx">📊 Generate Excel workbook</button>
+  </div>
+  <p class="mut" id="pdfNote">PDF needs an internet connection once (to load the jsPDF library). If it is unavailable, a printable report window opens instead.</p>
+  <div class="stats" id="repStats"></div>
+  <h3>Results by scope section</h3>
+  <div id="repChart"></div>
+  <div class="legend"><span><i class="seg-conform"></i>Conforming</span><span><i class="seg-minor"></i>Minor NC</span><span><i class="seg-major"></i>Major NC</span><span><i class="seg-obs"></i>Observation</span><span><i class="seg-ofi"></i>OFI</span><span><i class="seg-na"></i>N/A</span></div>
+  <h3>Nonconformities, observations &amp; improvements</h3>
+  <div id="repLists"></div>
+ </div>
+</section>
+</main>
+<footer class="appfoot">ISO/IEC 27001:2022 audit toolkit — single-file, offline-first. All data stays in this browser (localStorage) until you export it. The toolkit supports, but does not replace, the judgement of a competent auditor.</footer>
+<div id="modal" class="modal" hidden><div class="mbox">
+ <h3>How to use this toolkit</h3>
+ <ol>
+  <li><b>Plan</b> — fill in the engagement details, pick the audit scope (clause sections + Annex A themes), complete the Statement of Applicability and tick off the document request list.</li>
+  <li><b>Audit</b> — work through the planned clauses and controls. For each item set a result (Conforming, Minor/Major NC, Observation, OFI, N/A) and record evidence, remarks, auditor and date.</li>
+  <li><b>Actions</b> — maintain the corrective-action register; “Suggest actions from findings” creates one action per raised finding automatically.</li>
+  <li><b>Report</b> — review the live summary, then generate the PDF audit report and the Excel workbook. “Export project” saves everything as JSON to archive or continue on another machine.</li>
+ </ol>
+ <p><b>Result codes (ISO 19011 practice):</b> Conforming = requirement met · Minor NC = isolated lapse · Major NC = systematic failure or a missing requirement · Observation = worth noting · OFI = improvement suggestion · N/A = control not applicable (justify it in the plan).</p>
+ <p class="mut">Tip: press “Load demo” on any fresh start to see a completed example audit, then use “New audit” to begin your own.</p>
+ <div class="btnrow"><button class="btn primary" id="modalClose">Close</button></div>
+</div></div>
+<div id="toast" class="toast" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+'use strict';
+/* ================= ISO/IEC 27001:2022 dataset ================= */
+const THEMES={org:{n:'A.5 Organizational controls',s:'Organizational'},ppl:{n:'A.6 People controls',s:'People'},phy:{n:'A.7 Physical controls',s:'Physical'},tech:{n:'A.8 Technological controls',s:'Technological'}};
+const THEMELIST=['org','ppl','phy','tech'];
+const SECS={'4':'Context of the organization','5':'Leadership','6':'Planning','7':'Support','8':'Operation','9':'Performance evaluation','10':'Improvement'};
+const SECLIST=['4','5','6','7','8','9','10'];
+const CONTROLS=[
+{ref:'5.1',theme:'org',title:'Policies for information security',hint:'Policy set approved, published, communicated and reviewed at planned intervals.'},
+{ref:'5.2',theme:'org',title:'Information security roles and responsibilities',hint:'Roles defined, assigned and communicated (org chart, RACI); responsibilities match duties.'},
+{ref:'5.3',theme:'org',title:'Segregation of duties',hint:'Conflicting duties separated (request / approve / implement / audit); compensating controls where not possible.'},
+{ref:'5.4',theme:'org',title:'Management responsibilities',hint:'Management requires compliance, plans and secures objectives, verifies tasks; evidence of direction.'},
+{ref:'5.5',theme:'org',title:'Contact with authorities',hint:'Procedures and current contacts for authorities (regulators, CERT, law enforcement).'},
+{ref:'5.6',theme:'org',title:'Contact with special interest groups',hint:'Contacts/memberships with security forums or ISACs; information exchange managed.'},
+{ref:'5.7',theme:'org',title:'Threat intelligence',hint:'Threat information collected and analysed; inputs used in risk assessment and control decisions.'},
+{ref:'5.8',theme:'org',title:'Information security in project management',hint:'Security integrated into project and change management; security risk assessed per project.'},
+{ref:'5.9',theme:'org',title:'Inventory of information and other associated assets',hint:'Asset inventory with owners, kept up to date; sample entries checked against reality.'},
+{ref:'5.10',theme:'org',title:'Acceptable use of information and other associated assets',hint:'Acceptable-use rules documented, communicated and acknowledged by staff.'},
+{ref:'5.11',theme:'org',title:'Return of assets',hint:'Assets returned/destroyed on termination or change; sample leaver records show returns.'},
+{ref:'5.12',theme:'org',title:'Classification of information',hint:'Classification scheme defined; sampled information items are classified per the scheme.'},
+{ref:'5.13',theme:'org',title:'Labelling of information',hint:'Labelling and handling procedures per classification; sampled documents/media carry labels.'},
+{ref:'5.14',theme:'org',title:'Information transfer',hint:'Transfer agreements, secure channels (encrypted mail, SFTP), handling rules for sensitive data.'},
+{ref:'5.15',theme:'org',title:'Access control',hint:'Access control policy covering all access types; role restrictions documented.'},
+{ref:'5.16',theme:'org',title:'Identity management',hint:'Identity lifecycle managed; unique IDs; shared/generic IDs controlled and justified.'},
+{ref:'5.17',theme:'org',title:'Authentication information',hint:'Secure issuance and handling of passwords/keys; no defaults; secrets stored encrypted.'},
+{ref:'5.18',theme:'org',title:'Access rights',hint:'Provisioning, change, revocation process; periodic reviews; leavers removed promptly (sample).'},
+{ref:'5.19',theme:'org',title:'Information security in supplier relationships',hint:'Suppliers risk-assessed and registered with criticality; security requirements defined.'},
+{ref:'5.20',theme:'org',title:'Addressing information security within supplier agreements',hint:'Agreements include security requirements, service levels, monitoring, audit and termination clauses.'},
+{ref:'5.21',theme:'org',title:'Managing information security in the ICT supply chain',hint:'ICT supply-chain risks assessed; security requirements cascaded to subcontractors.'},
+{ref:'5.22',theme:'org',title:'Monitoring, review and change management of supplier services',hint:'Supplier services monitored and reviewed; changes managed; evidence of review meetings.'},
+{ref:'5.23',theme:'org',title:'Information security for use of cloud services',hint:'Cloud lifecycle process: approval, security requirements, provider assurance, exit strategy.'},
+{ref:'5.24',theme:'org',title:'Information security incident management planning and preparation',hint:'Incident procedure with roles, categories, severity scheme and contact points.'},
+{ref:'5.25',theme:'org',title:'Assessment and decision on information security events',hint:'Events assessed and triaged; criteria define what becomes an incident; decisions recorded.'},
+{ref:'5.26',theme:'org',title:'Response to information security incidents',hint:'Incidents responded to per procedure; sampled incidents show containment and timelines.'},
+{ref:'5.27',theme:'org',title:'Learning from information security incidents',hint:'Lessons identified; incident data analysed for trends; controls improved accordingly.'},
+{ref:'5.28',theme:'org',title:'Collection of evidence',hint:'Procedures for identifying, collecting and preserving evidence; chain of custody where needed.'},
+{ref:'5.29',theme:'org',title:'Information security during disruption',hint:'Security objectives maintained during disruption; plans consider security, not only continuity.'},
+{ref:'5.30',theme:'org',title:'ICT readiness for business continuity',hint:'ICT continuity plans, redundancy and backups tested; results documented against objectives.'},
+{ref:'5.31',theme:'org',title:'Legal, statutory, regulatory and contractual requirements',hint:'Requirements register kept current; compliance obligations identified per jurisdiction.'},
+{ref:'5.32',theme:'org',title:'Intellectual property rights',hint:'IP managed: software licences, open-source use, copyrighted material; licence register.'},
+{ref:'5.33',theme:'org',title:'Protection of records',hint:'Records protected from loss, falsification and unauthorised access; retention schedule followed.'},
+{ref:'5.34',theme:'org',title:'Privacy and protection of PII',hint:'PII processed per applicable law; data-subject requests handled; privacy notices issued.'},
+{ref:'5.35',theme:'org',title:'Independent review of information security',hint:'Independent reviews of the ISMS at planned intervals (management review, internal audit, external).'},
+{ref:'5.36',theme:'org',title:'Compliance with policies, rules and standards',hint:'Compliance with policies/standards monitored; deviations handled through the NC process.'},
+{ref:'5.37',theme:'org',title:'Documented operating procedures',hint:'Operating procedures documented, accessible to those who need them and kept current.'},
+{ref:'6.1',theme:'ppl',title:'Screening',hint:'Background checks proportionate to risk, done before/during employment, in line with law.'},
+{ref:'6.2',theme:'ppl',title:'Terms and conditions of employment',hint:'Contracts include security responsibilities; staff acknowledge them.'},
+{ref:'6.3',theme:'ppl',title:'Information security awareness, education and training',hint:'Awareness programme delivered; training records kept; sampled staff can explain their duties.'},
+{ref:'6.4',theme:'ppl',title:'Disciplinary process',hint:'Disciplinary process communicated; applied for policy violations; sample cases handled.'},
+{ref:'6.5',theme:'ppl',title:'Responsibilities after termination or change of employment',hint:'Leavers: assets returned, access revoked, confidentiality obligations persist (sample records).'},
+{ref:'6.6',theme:'ppl',title:'Confidentiality or non-disclosure agreements',hint:'NDAs identified, signed before access granted, reviewed; remain valid after termination.'},
+{ref:'6.7',theme:'ppl',title:'Remote working',hint:'Remote-work policy and measures (VPN, MFA, device hardening) applied to remote workers.'},
+{ref:'6.8',theme:'ppl',title:'Information security event reporting',hint:'Reporting channels known and used; sampled reports show prompt handling and feedback.'},
+{ref:'7.1',theme:'phy',title:'Physical security perimeters',hint:'Perimeters defined and protected (barriers, entry controls); site risk assessment done.'},
+{ref:'7.2',theme:'phy',title:'Physical entry',hint:'Entry controls (badge, reception); visitor logs kept; access rights reviewed; sample logs.'},
+{ref:'7.3',theme:'phy',title:'Securing offices, rooms and facilities',hint:'Offices/rooms secured appropriate to sensitivity; sensitive locations not publicly advertised.'},
+{ref:'7.4',theme:'phy',title:'Physical security monitoring',hint:'CCTV/alarm coverage of sensitive areas; recording retention; monitoring review process.'},
+{ref:'7.5',theme:'phy',title:'Protecting against physical and environmental threats',hint:'Protection from environmental threats (flood, fire, temperature); equipment siting considered.'},
+{ref:'7.6',theme:'phy',title:'Working in secure areas',hint:'Rules for secure areas (supervision, photography ban, access rules) designed and applied.'},
+{ref:'7.7',theme:'phy',title:'Clear desk and clear screen',hint:'Clear desk/screen policy; walkthrough sampling; papers and devices locked away.'},
+{ref:'7.8',theme:'phy',title:'Equipment siting and protection',hint:'Equipment sited securely (server rooms, screens not overlooked); environmental conditions OK.'},
+{ref:'7.9',theme:'phy',title:'Security of assets off-premises',hint:'Off-site devices/assets protected: encryption, tracking, policy communicated to users.'},
+{ref:'7.10',theme:'phy',title:'Storage media',hint:'Media lifecycle: inventory, handling, transport and disposal/sanitisation with certificates.'},
+{ref:'7.11',theme:'phy',title:'Supporting utilities',hint:'Utilities (power, cooling) protected: UPS/generator, maintenance and test schedule.'},
+{ref:'7.12',theme:'phy',title:'Cabling security',hint:'Cabling protected (armoured/concealed), power and data segregated, patch access controlled.'},
+{ref:'7.13',theme:'phy',title:'Equipment maintenance',hint:'Maintenance per vendor schedule; records kept; faulty equipment removed and repaired.'},
+{ref:'7.14',theme:'phy',title:'Secure disposal or re-use of equipment',hint:'Disposal/re-use preceded by verified sanitisation; disposal certificates retained.'},
+{ref:'8.1',theme:'tech',title:'User endpoint devices',hint:'Endpoint baseline: hardening, MDM, patching, encryption, screen lock on laptops/phones.'},
+{ref:'8.2',theme:'tech',title:'Privileged access rights',hint:'Privileged accounts restricted and reviewed; allocation per process; admin activity logged.'},
+{ref:'8.3',theme:'tech',title:'Information access restriction',hint:'Access restricted per classification and need-to-know; sample checks performed.'},
+{ref:'8.4',theme:'tech',title:'Access to source code',hint:'Source code access restricted; repository permissions mapped; dev and prod code separated.'},
+{ref:'8.5',theme:'tech',title:'Secure authentication',hint:'MFA/strong authentication on critical systems; password policy technically enforced.'},
+{ref:'8.6',theme:'tech',title:'Capacity management',hint:'Capacity monitored and projected; thresholds alert; evidence of scaling actions.'},
+{ref:'8.7',theme:'tech',title:'Protection against malware',hint:'AV/EDR coverage with updated rules; malware incidents handled; sample endpoints/servers.'},
+{ref:'8.8',theme:'tech',title:'Management of technical vulnerabilities',hint:'Vulnerabilities identified (scans/CVE feeds), assessed and remediated within defined SLAs.'},
+{ref:'8.9',theme:'tech',title:'Configuration management',hint:'Configs baselined and documented (servers, network, endpoints); drift monitored.'},
+{ref:'8.10',theme:'tech',title:'Information deletion',hint:'Retention/deletion rules applied; deletion verified; samples from storage and mailboxes.'},
+{ref:'8.11',theme:'tech',title:'Data masking',hint:'Masking/pseudonymisation used where needed (test data, support access, analytics).'},
+{ref:'8.12',theme:'tech',title:'Data leakage prevention',hint:'DLP measures: egress monitoring, tooling, watermarks, transfer controls.'},
+{ref:'8.13',theme:'tech',title:'Information backup',hint:'Backup plan per importance; coverage verified; restore tests documented with results.'},
+{ref:'8.14',theme:'tech',title:'Redundancy of information processing facilities',hint:'Redundancy (HA/DR) meets availability requirements; failover tests evidenced.'},
+{ref:'8.15',theme:'tech',title:'Logging',hint:'Key events logged, logs protected from tampering, retention defined; coverage sampled.'},
+{ref:'8.16',theme:'tech',title:'Monitoring activities',hint:'Logs/systems monitored (SIEM, alerts); anomalies investigated; response recorded.'},
+{ref:'8.17',theme:'tech',title:'Clock synchronization',hint:'Systems time-synchronised to an approved source (NTP); drift checks performed.'},
+{ref:'8.18',theme:'tech',title:'Use of privileged utility programs',hint:'Privileged utilities inventoried; use restricted and monitored.'},
+{ref:'8.19',theme:'tech',title:'Installation of software on operational systems',hint:'Software installation controlled: approved titles, production restrictions, integrity checks.'},
+{ref:'8.20',theme:'tech',title:'Networks security',hint:'Network controls: firewall rules, management interfaces, documented network policies.'},
+{ref:'8.21',theme:'tech',title:'Security of network services',hint:'Network service security requirements and SLAs defined and monitored.'},
+{ref:'8.22',theme:'tech',title:'Segregation of networks',hint:'Networks segregated (user, operations, guest, production); flows controlled; diagram matches reality.'},
+{ref:'8.23',theme:'tech',title:'Web filtering',hint:'Access to malicious/unauthorised sites filtered; rules and exceptions managed.'},
+{ref:'8.24',theme:'tech',title:'Use of cryptography',hint:'Crypto policy: approved algorithms, key management (generation, rotation, destruction).'},
+{ref:'8.25',theme:'tech',title:'Secure development life cycle',hint:'Secure SDLC applied: security gates, code review, separated environments.'},
+{ref:'8.26',theme:'tech',title:'Application security requirements',hint:'Security requirements defined in development/acquisition and verified in testing.'},
+{ref:'8.27',theme:'tech',title:'Secure system architecture and engineering principles',hint:'Architecture/engineering principles documented and applied to new systems.'},
+{ref:'8.28',theme:'tech',title:'Secure coding',hint:'Coding standards enforced; training given; static analysis; common vulnerability classes prevented.'},
+{ref:'8.29',theme:'tech',title:'Security testing in development and acceptance',hint:'SAST/DAST/penetration testing in dev and acceptance; findings tracked to closure.'},
+{ref:'8.30',theme:'tech',title:'Outsourced development',hint:'Outsourced development governed: requirements, reviews, IP, acceptance testing.'},
+{ref:'8.31',theme:'tech',title:'Separation of development, test and production environments',hint:'Environments separated; production data not used in test without controls; access per environment.'},
+{ref:'8.32',theme:'tech',title:'Change management',hint:'Changes: request, approval, testing, production authorisation, rollback plans.'},
+{ref:'8.33',theme:'tech',title:'Test information',hint:'Test data protected: masked or copied per policy; confidentiality of test data ensured.'},
+{ref:'8.34',theme:'tech',title:'Protection of information systems during audit testing',hint:'Audit/penetration tests on production planned and approved; safeguards applied; access limited.'}
+];
+const CLAUSES=[
+{ref:'4.1',sec:'4',title:'Understanding the organization and its context',hint:'Context issues (internal/external) determined; documented or evidenced in the ISMS.'},
+{ref:'4.2',sec:'4',title:'Understanding the needs and expectations of interested parties',hint:'Interested parties and their requirements determined; legal/contractual needs covered.'},
+{ref:'4.3',sec:'4',title:'Determining the scope of the ISMS',hint:'Scope documented, boundaries justified, interfaces and dependencies considered.'},
+{ref:'4.4',sec:'4',title:'Information security management system',hint:'ISMS processes established, implemented, maintained and continually improved.'},
+{ref:'5.1',sec:'5',title:'Leadership and commitment',hint:'Evidence: resources provided, objectives set, direction communicated, support visible.'},
+{ref:'5.2',sec:'5',title:'Policy',hint:'Information security policy exists, fits the organization, communicated and available.'},
+{ref:'5.3',sec:'5',title:'Organizational roles, responsibilities and authorities',hint:'Responsibilities assigned and communicated; authority to act (e.g. risk acceptance) defined.'},
+{ref:'6.1.1',sec:'6',title:'General — risks and opportunities',hint:'Risks and opportunities to the ISMS determined and addressed in planning.'},
+{ref:'6.1.2',sec:'6',title:'Information security risk assessment',hint:'Methodology defined (criteria, acceptance level, consistent repeatable results); assessments performed.'},
+{ref:'6.1.3',sec:'6',title:'Information security risk treatment',hint:'Treatment options applied; SoA produced; residual risks accepted by risk owners; owners assigned.'},
+{ref:'6.2',sec:'6',title:'Information security objectives and planning',hint:'Objectives measurable, aligned to policy, monitored; plans define what/who/when.'},
+{ref:'6.3',sec:'6',title:'Planning of changes',hint:'Changes planned and performed in a systematic manner.'},
+{ref:'7.1',sec:'7',title:'Resources',hint:'Resources (people, infrastructure, budget) determined and provided for the ISMS.'},
+{ref:'7.2',sec:'7',title:'Competence',hint:'Competence criteria defined; training/skills evidenced; non-competence addressed.'},
+{ref:'7.3',sec:'7',title:'Awareness',hint:'Staff aware of policy, their contribution and implications of nonconformity (sample interviews).'},
+{ref:'7.4',sec:'7',title:'Communication',hint:'Internal/external communication determined: what, when, with whom and how.'},
+{ref:'7.5',sec:'7',title:'Documented information',hint:'ISMS documents available, versioned, approved, protected; obsolete versions controlled.'},
+{ref:'8.1',sec:'8',title:'Operational planning and control',hint:'Operational criteria implemented; outsourced processes controlled; changes managed.'},
+{ref:'8.2',sec:'8',title:'Information security risk assessment (operation)',hint:'Risk assessments repeated at planned intervals or on significant change; results comparable.'},
+{ref:'8.3',sec:'8',title:'Information security risk treatment (operation)',hint:'Risk treatment implemented; residual risks as planned and accepted.'},
+{ref:'9.1',sec:'9',title:'Monitoring, measurement, analysis and evaluation',hint:'What/when to measure defined; methods defined; results analysed and reported.'},
+{ref:'9.2',sec:'9',title:'Internal audit',hint:'Internal audits at planned intervals: programme, objective criteria, impartiality, results reported.'},
+{ref:'9.3',sec:'9',title:'Management review',hint:'Reviews with required inputs/outputs at planned intervals; decisions and actions tracked.'},
+{ref:'10.1',sec:'10',title:'Continual improvement',hint:'ISMS suitability, adequacy and effectiveness continually improved.'},
+{ref:'10.2',sec:'10',title:'Nonconformity and corrective action',hint:'Nonconformities acted on, root cause analysed, corrections and corrective actions verified for effectiveness.'}
+];
+const DOCS=['ISMS scope statement (4.3)','Information security policy and policy set (5.1/5.2)','Asset inventory with owners (5.9)','Risk assessment methodology and criteria (6.1.2)','Risk register and risk treatment plan (6.1.3)','Statement of Applicability (6.1.3 d)','Information security objectives and achievement plans (6.2)','Competence and training records (7.2)','Awareness materials and communication records (7.3/7.4)','Documented information register / document control (7.5)','Access control policy and access review records (5.15/5.18)','Supplier register, agreements and review records (5.19–5.23)','Incident management procedure and incident log (5.24–5.27)','Business continuity / ICT readiness plans and test reports (5.29/5.30)','Legal, regulatory and contractual requirements register (5.31)','Privacy / PII processing records (5.34)','Vulnerability management reports and patch records (8.8)','Backup policy, schedule and restore test records (8.13)','Logging and monitoring policy with sample logs (8.15/8.16)','Cryptography and key management policy (8.24)','Secure development policy and security test records (8.25–8.29)','Change management records (8.32)','Physical security: visitor logs, CCTV, maintenance records (7.x)','HR records: screening, contracts, NDAs, leavers (6.x)','Internal audit programme, reports and nonconformity log (9.2/10.2)','Management review minutes and decisions (9.3)'];
+const ST={
+ '':{l:'Not audited',s:'—'},
+ conform:{l:'Conforming',s:'Conforming',cls:'st-conform',bg:[230,247,235],fg:[21,128,61]},
+ minor:{l:'Minor nonconformity',s:'Minor NC',cls:'st-minor',bg:[253,243,227],fg:[180,83,9]},
+ major:{l:'Major nonconformity',s:'Major NC',cls:'st-major',bg:[253,232,232],fg:[185,28,28]},
+ obs:{l:'Observation',s:'Observation',cls:'st-obs',bg:[227,240,250],fg:[7,89,133]},
+ ofi:{l:'Opportunity for improvement',s:'OFI',cls:'st-ofi',bg:[224,242,239],fg:[13,148,136]},
+ na:{l:'Not applicable',s:'N/A',cls:'st-na',bg:[238,241,245],fg:[100,116,139]}
+};
+const ORDER=['conform','minor','major','obs','ofi','na'];
+const NCSTATS=['minor','major','obs','ofi'];
+const OPT={
+ type:['Major NC','Minor NC','Observation','OFI','Risk','General'],
+ prio:['Low','Medium','High','Critical'],
+ status:['Open','In progress','Closed','Verified']
+};
+
+/* ================= state & persistence ================= */
+const KEY='iso27001_audit_tool_v1';
+const $=s=>document.querySelector(s);
+function todayISO(){return new Date().toISOString().slice(0,10)}
+function defaultRef(){return 'IA-'+new Date().getFullYear()+'-001'}
+function blankState(){return{v:1,
+ meta:{company:'',industry:'',ref:defaultRef(),type:'Internal audit',sites:'',start:'',end:'',lead:'',team:'',scope:'',objectives:'',conf:'Confidential',distr:'',reportDate:todayISO()},
+ scope:{secs:{'4':true,'5':true,'6':true,'7':true,'8':true,'9':true,'10':true},themes:{org:true,ppl:true,phy:true,tech:true}},
+ soa:{},findings:{},cfindings:{},actions:[],
+ docs:DOCS.map(t=>({t:t,got:false,note:''}))};}
+let S=loadState(),canStore=true;
+function loadState(){try{const r=localStorage.getItem(KEY);if(!r)return null;const o=JSON.parse(r);return(o&&o.v===1)?o:null}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));canStore=true;saveLabel('Saved '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}))}catch(e){canStore=false;saveLabel('Storage unavailable — export project JSON to keep your data')}}
+function saveLabel(t){const el=$('#saveState');if(el)el.textContent=t}
+/* escaping helpers */
+function xesc(s){return String(s==null?'':s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/\r?\n/g,'\n').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+function escT(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function attr(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtDate(d){if(!d)return '—';const p=String(d).split('-');if(p.length!==3)return d;const M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return p[2]+' '+M[parseInt(p[1],10)-1]+' '+p[0]}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toast._h);toast._h=setTimeout(()=>{t.hidden=true},2600)}
+/* derived helpers */
+function soaEntry(ref){return S.soa[ref]||null}
+function plannedClauses(){return CLAUSES.filter(c=>S.scope.secs[c.sec])}
+function plannedControls(){return CONTROLS.filter(c=>S.scope.themes[c.theme]&&(!S.soa[c.ref]||S.soa[c.ref].app!==false))}
+function getF(kind,ref){return kind==='c'?S.cfindings[ref]:S.findings[ref]}
+function ensureF(kind,ref){const b=kind==='c'?S.cfindings:S.findings;if(!b[ref])b[ref]={st:'',ev:'',rm:'',by:'',dt:''};return b[ref]}
+function isAudited(f){return f&&f.st}
+function statCounts(items){const r={total:items.length,audited:0,conform:0,minor:0,major:0,obs:0,ofi:0,na:0,pct:null};items.forEach(c=>{const f=getF(c.kind,c.ref);if(f&&f.st){r.audited++;r[f.st]++}});const denom=r.audited-r.na;if(denom>0)r.pct=Math.round(r.conform/denom*100);return r}
+function allPlanned(){const a=plannedClauses().map(c=>({kind:'c',ref:c.ref,title:c.title,hint:c.hint,grp:'sec'+c.sec,gname:'Clause '+c.ref}));plannedControls().forEach(c=>a.push({kind:'a',ref:c.ref,title:c.title,hint:c.hint,grp:c.theme,gname:THEMES[c.theme].s}));return a}
+function planIssues(){const iss=[];if(!S.meta.company.trim())iss.push('Auditee / company name is missing');if(!S.meta.scope.trim())iss.push('ISMS scope statement is missing');if(!S.meta.lead.trim())iss.push('Lead auditor is missing');if(!S.meta.start||!S.meta.end)iss.push('Audit dates are missing');let na=0;plannedControls().forEach(c=>{const e=soaEntry(c.ref);if(e&&e.app===false&&!e.just.trim())na++});if(na)iss.push(na+' control(s) marked N/A without justification');return iss}
+/* ================= tabs ================= */
+function setTab(t){
+ document.querySelectorAll('.tabbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+ ['plan','audit','actions','report'].forEach(x=>{$('#sec-'+x).hidden=(x!==t)});
+ if(t==='audit')renderAudit();
+ if(t==='actions')renderActions();
+ if(t==='report')renderReport();
+ window.scrollTo({top:0});
+}
+/* ================= PLAN tab ================= */
+const METAMAP={m_company:'company',m_industry:'industry',m_ref:'ref',m_type:'type',m_sites:'sites',m_start:'start',m_end:'end',m_lead:'lead',m_team:'team',m_scope:'scope',m_objectives:'objectives',m_conf:'conf',m_distr:'distr',m_reportDate:'reportDate'};
+function renderPlan(){
+ for(const id in METAMAP){const el=document.getElementById(id);if(el)el.value=S.meta[METAMAP[id]]||''}
+ renderScopeChips();renderScopeNote();renderSoa();renderDocs();
+}
+function renderScopeChips(){
+ $('#scopeSecs').innerHTML=SECLIST.map(s=>'<label class="chip"><input type="checkbox" data-sec="'+s+'" '+(S.scope.secs[s]?'checked':'')+'><span>'+s+' · '+SECS[s]+'</span></label>').join('');
+ $('#scopeThemes').innerHTML=THEMELIST.map(t=>'<label class="chip"><input type="checkbox" data-thm="'+t+'" '+(S.scope.themes[t]?'checked':'')+'><span>'+THEMES[t].n+' ('+CONTROLS.filter(c=>c.theme===t).length+')</span></label>').join('');
+}
+function renderScopeNote(){
+ const ns=SECLIST.filter(s=>S.scope.secs[s]).length,nc=plannedControls().length;
+ const th=THEMELIST.filter(t=>S.scope.themes[t]).map(t=>THEMES[t].s).join(', ')||'none';
+ const na=CONTROLS.filter(c=>S.scope.themes[c.theme]&&soaEntry(c.ref)&&soaEntry(c.ref).app===false).length;
+ $('#scopeNote').innerHTML='<b>In audit scope:</b> '+ns+' of 7 clause sections · '+nc+' Annex A controls across themes: '+th+(na?' · '+na+' control(s) excluded as N/A in the SoA below':'');
+}
+const soaF={theme:'all',q:''};
+function soaRow(c){
+ const e=soaEntry(c.ref);const app=e?e.app:null;
+ const ph=app===false?'Justification required for N/A':'—';
+ return '<tr data-sref="'+c.ref+'"><td class="mono">'+c.ref+'</td><td>'+THEMES[c.theme].s+'</td><td>'+c.title+'</td>'+
+ '<td><div class="mini"><button class="mbtn'+(app===true?' sel':'')+'" data-app="1" title="Applicable">Yes</button>'+
+ '<button class="mbtn'+(app===false?' sel':'')+'" data-app="0" title="Not applicable">No</button></div></td>'+
+ '<td><input type="text" data-jf="1" value="'+attr(e?e.just||'':'')+'" placeholder="'+ph+'"'+(app===false?'':' disabled')+'></td></tr>';
+}
+function renderSoa(){
+ let list=plannedControls();
+ if(soaF.theme!=='all')list=list.filter(c=>c.theme===soaF.theme);
+ if(soaF.q)list=list.filter(c=>(c.ref+' '+c.title).toLowerCase().includes(soaF.q.toLowerCase()));
+ $('#soaBody').innerHTML=list.map(soaRow).join('')||'<tr><td colspan="5" class="empty">No controls match the current filter.</td></tr>';
+ const tot=plannedControls().length;let yes=0,no=0,undec=0;
+ plannedControls().forEach(c=>{const e=soaEntry(c.ref);if(!e)undec++;else if(e.app===false)no++;else yes++});
+ $('#soaStats').textContent=tot+' controls in scope · '+yes+' applicable · '+no+' N/A · '+undec+' undecided';
+}
+function renderDocs(){
+ $('#docsBody').innerHTML=S.docs.map((d,i)=>'<tr><td>'+escT(d.t)+'</td>'+
+ '<td><input type="checkbox" data-di="'+i+'" data-df="got" '+(d.got?'checked':'')+' style="width:auto"></td>'+
+ '<td><input type="text" data-di="'+i+'" data-df="note" value="'+attr(d.note)+'" placeholder="Version / date / owner…"></td></tr>').join('')+
+ '<tr><td colspan="3" class="mut">'+S.docs.filter(d=>d.got).length+' of '+S.docs.length+' requested items received</td></tr>';
+}
+
+/* ================= AUDIT tab ================= */
+let audMode='a',audOpen={},audHideDone=false;
+const audFlt={theme:'all',q:'',st:'all'};
+function plannedItems(){
+ if(audMode==='c')return plannedClauses().map(c=>({kind:'c',ref:c.ref,title:c.title,hint:c.hint,grp:c.sec}));
+ return plannedControls().filter(c=>audFlt.theme==='all'||c.theme===audFlt.theme).map(c=>({kind:'a',ref:c.ref,title:c.title,hint:c.hint,grp:c.theme}));
+}
+function audRow(it){
+ const f=getF(it.kind,it.ref)||{};const st=f.st||'';const stc=st?ST[st].cls:'';
+ const pills=ORDER.map(k=>'<button class="pill '+(st===k?'sel ':'')+ST[k].cls+'" data-st="'+k+'" title="'+ST[k].l+'">'+ST[k].s+'</button>').join('');
+ return '<div class="aitem '+stc+'" data-kind="'+it.kind+'" data-ref="'+it.ref+'">'+
+  '<div class="ahead tgl"><span class="ref">'+it.ref+'</span>'+
+  '<div class="atitle"><b>'+it.title+'</b><span class="hint">'+it.hint+'</span></div>'+
+  '<div class="apills">'+pills+'</div><button class="chev" data-chev="1">▸</button></div>'+
+  '<div class="adetail'+(audOpen[it.ref]?'':' hide')+'">'+
+   '<div class="agrid">'+
+    '<div class="fld wide"><label>Evidence obtained / samples examined</label><textarea data-f="ev" placeholder="Documents, records, system screenshots, interviews, observations…">'+escT(f.ev)+'</textarea></div>'+
+    '<div class="fld wide"><label>Remarks / finding description</label><textarea data-f="rm" placeholder="What was found, which requirement it relates to, why it matters…">'+escT(f.rm)+'</textarea></div>'+
+    '<div class="fld"><label>Auditor</label><input data-f="by" value="'+attr(f.by)+'"></div>'+
+    '<div class="fld"><label>Date</label><input type="date" data-f="dt" value="'+attr(f.dt)+'"></div>'+
+   '</div>'+
+   '<div class="arow"><button class="btn sm raise" data-raise="1">＋ Raise action from this finding</button>'+
+   '<span class="mut fst">'+(st?ST[st].l:'Not yet audited')+'</span></div>'+
+  '</div></div>';
+}
+function renderAudit(){
+ renderPlanCheck();
+ const items=plannedItems();
+ let list=items;
+ if(audFlt.st!=='all'){
+  if(audFlt.st==='todo')list=list.filter(it=>!isAudited(getF(it.kind,it.ref)));
+  else list=list.filter(it=>{const f=getF(it.kind,it.ref);return f&&f.st===audFlt.st});
+ }
+ if(audFlt.q)list=list.filter(it=>{const f=getF(it.kind,it.ref)||{};return(it.ref+' '+it.title+' '+(f.ev||'')+' '+(f.rm||'')).toLowerCase().includes(audFlt.q.toLowerCase())});
+ if(audHideDone)list=list.filter(it=>!isAudited(getF(it.kind,it.ref)));
+ const stOpts='<option value="all">All results</option><option value="todo">Not audited</option>'+ORDER.map(k=>'<option value="'+k+'">'+ST[k].l+'</option>').join('');
+ const as=$('#audStatus');const cur=audFlt.st;if(as.innerHTML!==stOpts)as.innerHTML=stOpts;as.value=cur;
+ $('#audList').innerHTML=list.map(audRow).join('')||'<div class="card"><p class="empty mut" style="text-align:center;padding:20px">No items match the current filters.</p></div>';
+ renderAudProgress(items);
+}
+function renderAudProgress(items){
+ const r=statCounts(items);
+ const chips=ORDER.map(k=>'<span class="badge '+ST[k].cls+'">'+ST[k].s+': '+r[k]+'</span>').join(' ');
+ const pct=r.pct===null?'—':r.pct+'%';
+ $('#audProgress').innerHTML=
+  '<div class="pbar"><span style="flex:none;width:110px">Audited '+r.audited+'/'+r.total+'</span><div class="meter"><i style="width:'+(r.total?Math.round(r.audited/r.total*100):0)+'%"></i></div><b style="flex:none;color:var(--navy)">Conformity '+pct+'</b></div>'+
+  '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+chips+'</div>';
+}
+function renderPlanCheck(){
+ const iss=planIssues();const el=$('#planCheck');
+ if(iss.length){el.className='card plancheck warn';el.innerHTML='<h2>Plan check</h2><ul>'+iss.map(i=>'<li>'+i+'</li>').join('')+'</ul><p class="mut">Finish the Plan tab first so the audit follows a complete plan — you can still start auditing meanwhile.</p>';}
+ else{el.className='card plancheck';
+  const th=THEMELIST.filter(t=>S.scope.themes[t]).map(t=>THEMES[t].s).join(', ');
+  el.innerHTML='<h2>Auditing '+escT(S.meta.company||'this auditee')+' according to the plan</h2>'+
+  '<ul><li><b>Type:</b> '+escT(S.meta.type)+' · <b>Dates:</b> '+fmtDate(S.meta.start)+' – '+fmtDate(S.meta.end)+'</li>'+
+  '<li><b>Lead:</b> '+escT(S.meta.lead)+(S.meta.team?' · <b>Team:</b> '+escT(S.meta.team):'')+'</li>'+
+  '<li><b>Scope:</b> clause sections '+SECLIST.filter(s=>S.scope.secs[s]).join(', ')+' · Annex A themes: '+th+' · '+plannedControls().length+' controls</li></ul>';}
+}
+function updateRowUI(row){
+ const kind=row.dataset.kind,ref=row.dataset.ref,f=getF(kind,ref)||{};const st=f.st||'';
+ row.className='aitem '+(st?ST[st].cls:'');
+ row.querySelectorAll('.pill').forEach(p=>p.classList.toggle('sel',p.dataset.st===st));
+ const mut=row.querySelector('.fst');if(mut)mut.textContent=st?ST[st].l:'Not yet audited';
+}
+/* ================= ACTIONS tab ================= */
+function nextActRef(type){
+ const pre=type==='Major NC'||type==='Minor NC'?'NC':(type==='Observation'?'OBS':'OFI');
+ let n=1;S.actions.forEach(a=>{if(a.ref.startsWith(pre+'-')){const m=parseInt(a.ref.slice(pre.length+1),10);if(m>=n)n=m+1}});
+ return pre+'-'+String(n).padStart(2,'0');
+}
+function newAction(source,kind,st,finding){
+ const type=st==='major'?'Major NC':st==='minor'?'Minor NC':st==='obs'?'Observation':'OFI';
+ return{id:'a'+Date.now()+Math.floor(Math.random()*1e4),ref:nextActRef(type),source:source,
+  type:type,finding:finding||'',action:'',owner:'',due:'',prio:'Medium',status:'Open',verify:''};
+}
+function renderActions(){
+ $('#actBody').innerHTML=S.actions.map(a=>'<tr data-aid="'+a.id+'">'+
+  '<td class="mono">'+a.ref+'</td><td class="mono">'+a.source+'</td>'+
+  '<td><select data-k="type">'+OPT.type.map(o=>'<option'+(a.type===o?' selected':'')+'>'+o+'</option>').join('')+'</select></td>'+
+  '<td><textarea data-k="finding" placeholder="The nonconformity / requirement…">'+escT(a.finding)+'</textarea></td>'+
+  '<td><textarea data-k="action" placeholder="What will be done, root cause addressed…">'+escT(a.action)+'</textarea></td>'+
+  '<td><input data-k="owner" value="'+attr(a.owner)+'" placeholder="Owner"></td>'+
+  '<td><input type="date" data-k="due" value="'+attr(a.due)+'"></td>'+
+  '<td><select data-k="prio">'+OPT.prio.map(o=>'<option'+(a.prio===o?' selected':'')+'>'+o+'</option>').join('')+'</select></td>'+
+  '<td><select data-k="status">'+OPT.status.map(o=>'<option'+(a.status===o?' selected':'')+'>'+o+'</option>').join('')+'</select></td>'+
+  '<td><input data-k="verify" value="'+attr(a.verify)+'" placeholder="Effectiveness check / date"></td>'+
+  '<td><button class="del" data-del="1" title="Delete action">✕</button></td></tr>').join('')||
+  '<tr><td colspan="11" class="empty">No actions yet. Use “Suggest actions from findings” or add one manually.</td></tr>';
+ $('#cntActions').textContent=S.actions.length;
+}
+function suggestActions(){
+ const src=[...plannedClauses().map(c=>['c',c]),...plannedControls().map(c=>['a',c])];let n=0;
+ for(const[k,c]of src){
+  const f=getF(k,c.ref);
+  if(f&&f.st&&NCSTATS.includes(f.st)&&!S.actions.some(a=>a.source===c.ref)){
+   S.actions.push(newAction(c.ref,k,f.st,c.ref+' '+c.title+': '+(f.rm||f.ev||ST[f.st].l)));n++;
+  }
+ }
+ if(n){save();renderActions();toast(n+' action(s) created from findings');}else toast('Every raised finding already has an action');
+}
+function raiseAction(kind,ref){
+ const items=allPlanned();const it=items.find(i=>i.kind===kind&&i.ref===ref);if(!it)return;
+ const f=getF(kind,ref)||{};const st=f.st;
+ if(!st||!NCSTATS.includes(st)){toast('Set a Minor/Major NC, Observation or OFI result first');return}
+ if(S.actions.some(a=>a.source===ref)){toast('An action for '+ref+' already exists');setTab('actions');return}
+ const a=newAction(ref,kind,st,(ref+' '+it.title+': '+(f.rm||f.ev||'')).trim());S.actions.push(a);
+ save();setTab('actions');renderActions();
+ const row=$('#actBody').querySelector('[data-aid="'+a.id+'"]');
+ if(row){row.classList.add('flash');row.scrollIntoView({block:'center'})}
+ toast('Action '+a.ref+' created from '+ref);
+}
+
+/* ================= REPORT tab ================= */
+function renderReport(){
+ const items=allPlanned();const r=statCounts(items);
+ const pct=r.pct===null?'—':r.pct+'%';
+ const stat=(v,c,cls)=>'<div class="stat '+(cls||'')+'"><b>'+v+'</b><span>'+c+'</span></div>';
+ $('#repStats').innerHTML=stat(r.total,'Items in scope')+stat(r.audited,'Audited')+stat(pct,'Conformity',r.pct===null?'':(r.pct>=90?'good':'warn'))+
+  stat(r.major,'Major NC',r.major?'alert':'')+stat(r.minor,'Minor NC',r.minor?'warn':'')+stat(r.obs,'Observations')+stat(r.ofi,'Improvements')+stat(S.actions.length,'Actions raised');
+ const rows=[['Clauses 4–10',statCounts(items.filter(i=>i.kind==='c'))]];
+ THEMELIST.forEach(t=>rows.push([THEMES[t].n,statCounts(items.filter(i=>i.kind==='a'&&i.grp===t))]));
+ $('#repChart').innerHTML=rows.map(row=>{
+  const d=row[1];const tot=d.total||1;
+  const segs=ORDER.map(k=>{const w=Math.round((d[k]||0)/tot*1000)/10;return w?'<div class="seg seg-'+k+'" style="width:'+w+'%" title="'+ST[k].l+': '+d[k]+'"></div>':''}).join('');
+  return '<div class="bar"><span class="bl">'+row[0]+'</span><div class="track">'+segs+'</div><span class="bv">'+d.audited+'/'+d.total+'</span></div>';
+ }).join('');
+ let html='';let has=false;
+ ['major','minor','obs','ofi'].forEach(k=>{
+  const hits=items.filter(i=>{const f=getF(i.kind,i.ref);return f&&f.st===k});
+  if(hits.length){has=true;
+   html+='<ul class="findlist">'+hits.map(i=>{const f=getF(i.kind,i.ref);
+    return '<li class="'+ST[k].cls+'" style="--c:var(--'+({major:'major',minor:'minor',obs:'obs',ofi:'ofi'}[k])+');--cb:var(--'+({major:'majorbg',minor:'minorbg',obs:'obsbg',ofi:'ofibg'}[k])+')"><b class="t">'+i.ref+' '+i.title+'</b> — <b>'+ST[k].l+'</b> '+escT(f.rm||f.ev||'')+'</li>'}).join('')+'</ul>';
+  }
+ });
+ $('#repLists').innerHTML=has?html:'<p class="mut">No nonconformities, observations or improvement opportunities raised so far.</p>';
+}
+/* ================= minimal XLSX writer (no libraries) ================= */
+let CRCT=null;
+function crc32(d){if(!CRCT){CRCT=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);CRCT[n]=c>>>0}}let c=0xFFFFFFFF;for(let i=0;i<d.length;i++)c=CRCT[(c^d[i])&0xFF]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function u8concat(parts){let t=0;parts.forEach(p=>t+=p.length);const o=new Uint8Array(t);let off=0;parts.forEach(p=>{o.set(p,off);off+=p.length});return o}
+function zipFiles(entries){
+ const enc=new TextEncoder();const parts=[],cd=[];let off=0;const n=entries.length;
+ const now=new Date();const dd=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+ const dt=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+ for(const e of entries){
+  const nb=enc.encode(e.name),d=e.data,c=crc32(d);
+  const lh=new Uint8Array(30+nb.length),v=new DataView(lh.buffer);
+  v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0,true);v.setUint16(8,0,true);
+  v.setUint16(10,dt,true);v.setUint16(12,dd,true);v.setUint32(14,c,true);v.setUint32(18,d.length,true);v.setUint32(22,d.length,true);
+  v.setUint16(26,nb.length,true);v.setUint16(28,0,true);lh.set(nb,30);parts.push(lh,d);
+  const ch=new Uint8Array(46+nb.length),cv=new DataView(ch.buffer);
+  cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0,true);cv.setUint16(10,0,true);
+  cv.setUint16(12,dt,true);cv.setUint16(14,dd,true);cv.setUint32(16,c,true);cv.setUint32(20,d.length,true);cv.setUint32(24,d.length,true);
+  cv.setUint16(28,nb.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);cv.setUint16(34,0,true);cv.setUint16(36,0,true);
+  cv.setUint32(38,0,true);cv.setUint32(42,off,true);ch.set(nb,46);cd.push(ch);
+  off+=lh.length+d.length;
+ }
+ const cdSize=cd.reduce((a,p)=>a+p.length,0);
+ const eo=new Uint8Array(22),ev=new DataView(eo.buffer);
+ ev.setUint32(0,0x06054b50,true);ev.setUint16(4,0,true);ev.setUint16(6,0,true);ev.setUint16(8,n,true);ev.setUint16(10,n,true);
+ ev.setUint32(12,cdSize,true);ev.setUint32(16,off,true);ev.setUint16(20,0,true);
+ return u8concat([...parts,...cd,eo]);
+}
+function colName(n){let s='';while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s}
+function sheetXml(sh){
+ let cols='<cols>'+sh.cols.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols>';
+ let rows='';
+ sh.rows.forEach((r,ri)=>{
+  let cells='';
+  r.forEach((cell,ci)=>{
+   if(cell==null||cell==='')return;
+   const ref=colName(ci+1)+(ri+1);
+   cells+='<c r="'+ref+'" t="inlineStr"'+(ri===0?' s="1"':(cell&&cell._w?' s="2"':''))+'><is><t xml:space="preserve">'+xesc(cell&&cell._w!==undefined?cell._w:cell)+'</t></is></c>';
+  });
+  rows+='<row r="'+(ri+1)+'">'+cells+'</row>';
+ });
+ const lastCol=colName(sh.cols.length);
+ const af=sh.rows.length>1?'<autoFilter ref="A1:'+lastCol+sh.rows.length+'"/>':'';
+ return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+ '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+ '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>'+
+ cols+'<sheetData>'+rows+'</sheetData>'+af+'</worksheet>';
+}
+const XLSX_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF16324F"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+function packXlsx(sheets){
+ const enc=new TextEncoder();
+ const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+ const wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><workbookPr/><sheets>'+sheets.map((s,i)=>'<sheet name="'+xesc(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+'</sheets></workbook>';
+ const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheets.map((s,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+ const rootRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+ const entries=[{name:'[Content_Types].xml',data:enc.encode(ct)},{name:'_rels/.rels',data:enc.encode(rootRels)},{name:'xl/workbook.xml',data:enc.encode(wb)},{name:'xl/_rels/workbook.xml.rels',data:enc.encode(rels)},{name:'xl/styles.xml',data:enc.encode(XLSX_STYLES)}];
+ sheets.forEach((s,i)=>entries.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:enc.encode(sheetXml(s))}));
+ return zipFiles(entries);
+}
+function W(txt,wrap){return wrap?{_w:txt,_wrap:1}:txt}
+function buildSheets(){
+ const items=allPlanned();
+ const gen=new Date().toISOString().slice(0,19).replace('T',' ');
+ const st=allPlanned();const r=statCounts(st);
+ const overview=[['ISO/IEC 27001:2022 audit — overview',''],
+  ['Auditee / company',S.meta.company],['Industry',S.meta.industry],['Audit reference',S.meta.ref],['Audit type',S.meta.type],
+  ['Sites in scope',S.meta.sites],['Audit start',S.meta.start],['Audit end',S.meta.end],['Lead auditor',S.meta.lead],['Audit team',S.meta.team],
+  ['Report date',S.meta.reportDate],['Classification',S.meta.conf],['Distribution',S.meta.distr],
+  ['ISMS scope statement',S.meta.scope],['Audit objectives',S.meta.objectives],
+  ['Clause sections in scope',SECLIST.filter(s=>S.scope.secs[s]).join(', ')],
+  ['Annex A themes in scope',THEMELIST.filter(t=>S.scope.themes[t]).map(t=>THEMES[t].s).join(', ')],
+  ['Items in audit scope',String(r.total)],['Audited',String(r.audited)],['Conformity rate',r.pct===null?'—':r.pct+'%'],
+  ['Major NCs',String(r.major)],['Minor NCs',String(r.minor)],['Observations',String(r.obs)],['Opportunities for improvement',String(r.ofi)],
+  ['Actions in register',String(S.actions.length)],
+  ['Documents received',S.docs.filter(d=>d.got).length+' of '+S.docs.length],
+  ['Generated by ISO 27001 Audit Toolkit',gen]];
+ const sum=[['Status','Count'],['Items in scope',String(r.total)],['Audited',String(r.audited)],['Conformity rate',r.pct===null?'—':r.pct+'%']].concat(ORDER.map(k=>[ST[k].l,String(r[k])]));
+ const perGrp=[['Section','In scope','Audited','Conforming','Minor NC','Major NC','Observation','OFI','N/A','Conformity %']];
+ const grpRow=(g,items)=>{const d=statCounts(items);return[g.name,String(d.total),String(d.audited),String(d.conform),String(d.minor),String(d.major),String(d.obs),String(d.ofi),String(d.na),d.pct===null?'—':d.pct+'%']};
+ perGrp.push(grpRow({name:'Clauses 4–10'},items.filter(i=>i.kind==='c')));
+ THEMELIST.forEach(t=>perGrp.push(grpRow({name:THEMES[t].n},items.filter(i=>i.kind==='a'&&i.grp===t))));
+ const detail=(kind,label)=>{
+  const rows=[[label,'In scope','Status','Evidence obtained','Remarks','Auditor','Date']];
+  (kind==='c'?plannedClauses():plannedControls()).forEach(c=>{
+   const f=getF(kind,c.ref)||{};
+   rows.push([c.ref+' '+c.title,(kind==='c'?S.scope.secs[c.sec]?'Yes':'No':'Yes'),f.st?ST[f.st].l:'Not audited',f.ev||'',f.rm||'',f.by||'',f.dt||'']);
+  });
+  return{name:label,cols:[38,9,16,42,42,14,12],rows:rows};
+ };
+ const actRows=[['Ref','Source','Type','Finding / requirement','Corrective action','Owner','Due','Priority','Status','Verification of effectiveness']];
+ S.actions.forEach(a=>actRows.push([a.ref,a.source,a.type,a.finding,a.action,a.owner,a.due,a.prio,a.status,a.verify]));
+ const soaRows=[['Ref','Theme','Control','Applicable','Justification']];
+ CONTROLS.filter(c=>S.scope.themes[c.theme]).forEach(c=>{const e=soaEntry(c.ref);
+  soaRows.push([c.ref,THEMES[c.theme].s,c.title,e?(e.app===false?'No':'Yes'):'Undecided',e?e.just||'':''])});
+ const docRows=[['Document / information requested','Received','Notes']].concat(S.docs.map(d=>[d.t,d.got?'Yes':'No',d.note||'']));
+ return[
+  {name:'Audit Overview',cols:[34,80],rows:overview},
+  {name:'Summary',cols:[34,12],rows:sum},
+  {name:'Status by section',cols:[34,9,9,11,9,9,12,7,7,12],rows:perGrp},
+  detail('c','Clauses 4-10'),
+  detail('a','Annex A Controls'),
+  {name:'Actions Register',cols:[9,9,13,44,44,14,11,10,11,26],rows:actRows},
+  {name:'SoA',cols:[8,15,46,11,44],rows:soaRows},
+  {name:'Document Request',cols:[56,10,40],rows:docRows}
+ ];
+}
+function buildXlsxBytes(){return packXlsx(buildSheets())}
+function dl(name,blob){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},800)}
+function fileSlug(){const s=(S.meta.company||'audit').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);return s||'audit'}
+function downloadXlsx(){
+ try{
+  const bytes=buildXlsxBytes();
+  dl('iso27001-audit-'+fileSlug()+'-'+todayISO()+'.xlsx',new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  toast('Excel workbook generated ('+buildSheets().length+' sheets)');
+ }catch(e){alert('Excel generation failed: '+e.message)}
+}
+/* ================= PDF report (jsPDF + autotable, printable fallback) ================= */
+function pdfT(s){return String(s==null?'':s).replace(/\r\n/g,'\n').replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/\u2026/g,'...').replace(/\u2022/g,'-').replace(/\u00A0/g,' ').replace(/[^\n\x20-\x7E\u00A1-\u00FF]/g,'')}
+function tr(s,n){s=String(s==null?'':s).trim();return s.length>n?s.slice(0,n-1)+'...':s}
+function pdfStatusColor(d){
+ if(d.section!=='body')return;
+ const t=String(d.cell.text&&d.cell.text[0]||'');
+ for(const k of ORDER){if(ST[k].s===t){d.cell.styles.fillColor=ST[k].bg;d.cell.styles.textColor=ST[k].fg;d.cell.styles.fontStyle='bold';break}}
+}
+function buildPdf(){
+ if(!(window.jspdf&&window.jspdf.jsPDF&&typeof window.jspdf.jsPDF==='function')){printFallback();return}
+ try{
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'pt',format:'a4'});
+  const PW=595,MX=40,CW=PW-MX*2;
+  const items=allPlanned();const r=statCounts(items);
+  const co=S.meta.company||'(unnamed auditee)';
+  const ref=S.meta.ref||'—';
+  /* ---- cover ---- */
+  doc.setFillColor(22,50,79);doc.rect(0,0,PW,150,'F');
+  doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text(pdfT('ISO/IEC 27001:2022 — INFORMATION SECURITY MANAGEMENT SYSTEM'),MX,52);
+  doc.setFontSize(17);
+  doc.text(doc.splitTextToSize(pdfT('ISMS AUDIT REPORT'),CW),MX,76);
+  doc.setFont('helvetica','normal');doc.setFontSize(11);
+  doc.text(doc.splitTextToSize(pdfT(co+' · '+S.meta.type),CW),MX,116);
+  doc.setTextColor(30);let y=196;
+  const fields=[['Auditee',co],['Industry / sector',S.meta.industry||'—'],['Audit reference',ref],['Audit type',S.meta.type],
+   ['Sites in scope',S.meta.sites||'—'],['Audit dates',fmtDate(S.meta.start)+' – '+fmtDate(S.meta.end)],
+   ['Lead auditor',S.meta.lead||'—'],['Audit team',S.meta.team||'—'],
+   ['Report date',fmtDate(S.meta.reportDate)],['Distribution',S.meta.distr||'—']];
+  doc.setFontSize(9.5);
+  fields.forEach(f=>{doc.setFont('helvetica','bold');doc.text(pdfT(f[0]),MX,y);
+   doc.setFont('helvetica','normal');
+   doc.text(doc.splitTextToSize(pdfT(f[1]),CW-140),MX+120,y);y+=26});
+  y+=6;
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text('ISMS scope under audit',MX,y);y+=16;
+  doc.setFont('helvetica','normal');
+  doc.text(doc.splitTextToSize(pdfT(S.meta.scope||'Scope statement not provided in the audit plan.'),CW),MX,y);y+=doc.splitTextToSize(pdfT(S.meta.scope||'.'),CW).length*12+14;
+  doc.setDrawColor(180,195,215);doc.rect(MX,y,CW,40);
+  doc.setFont('helvetica','bold');doc.setTextColor(185,28,28);
+  doc.text(pdfT((S.meta.conf||'Confidential').toUpperCase()+' — prepared for '+co),MX+14,y+24);
+  doc.addPage();
+  let Y=54;
+  const ensure=h=>{if(Y+h>780){doc.addPage();Y=54}};
+  const h1=t=>{ensure(170);doc.setFont('helvetica','bold');doc.setFontSize(12.5);doc.setTextColor(22,50,79);doc.text(pdfT(t),MX,Y);Y+=7;
+   doc.setDrawColor(22,50,79);doc.setLineWidth(0.8);doc.line(MX,Y,PW-MX,Y);Y+=16};
+  const p=(t,ind)=>{doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(45);ensure(40);
+   const lines=doc.splitTextToSize(pdfT(t),CW-(ind||0));Y+=4;
+   if(Y+lines.length*13>790){doc.addPage();Y=54}
+   doc.text(lines,MX+(ind||0),Y+10);Y+=lines.length*13+8};
+  const tbl=(name,head,body,opts)=>{ensure(130);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(30);doc.text(pdfT(name),MX,Y+2);Y+=16;
+   doc.autoTable(Object.assign({head:[head.map(pdfT)],body:body.map(row=>row.map(pdfT)),startY:Y,margin:{left:MX,right:MX,top:50,bottom:56},
+    styles:{fontSize:8.3,cellPadding:3.5,overflow:'linebreak',textColor:[45,55,72],lineColor:[210,220,232],lineWidth:0.4},
+    headStyles:{fillColor:[22,50,79],textColor:255,fontSize:8.3,fontStyle:'bold'},alternateRowStyles:{fillColor:[244,247,251]}},opts||{}));
+   Y=doc.lastAutoTable.finalY+18};
+  /* 1 executive summary */
+  h1('1. Executive summary');
+  p(conclusionText(r));
+  tbl('Results by status',['Result','Count'],[['Items in audit scope',String(r.total)],['Audited',String(r.audited)],['Conformity rate (of audited, excl. N/A)',r.pct===null?'—':r.pct+'%']]
+   .concat(ORDER.map(k=>[ST[k].l,String(r[k])])),
+   {didParseCell:pdfStatusColor,columnStyles:{1:{cellWidth:60,halign:'left'}}});
+  const perGrp=[['Section','In scope','Audited','Conforming','Minor NC','Major NC','Obs','OFI','N/A']];
+  const gr=(n,ii)=>{const d=statCounts(ii);return[n,String(d.total),String(d.audited),String(d.conform),String(d.minor),String(d.major),String(d.obs),String(d.ofi),String(d.na)]};
+  perGrp.push(gr('Management clauses 4–10',items.filter(i=>i.kind==='c')));
+  THEMELIST.forEach(t=>{const ii=items.filter(i=>i.kind==='a'&&i.grp===t);if(ii.length)perGrp.push(gr(THEMES[t].n,ii))});
+  tbl('Results by scope section',perGrp[0],perGrp.slice(1));
+  /* 2 scope & methodology */
+  h1('2. Audit scope, criteria and methodology');
+  p('Scope: '+(S.meta.scope||'—')+'  Sites: '+(S.meta.sites||'—'));
+  p('Objectives: '+(S.meta.objectives||'Verify conformity with ISO/IEC 27001:2022 and the effectiveness of the ISMS.'));
+  p('Audit criteria: '+criteriaText());
+  p('Methodology: this was a '+S.meta.type+' conducted by interviewing responsible staff, inspecting documents and records, observing implemented controls and sampling operational data, consistent with the audit practice of ISO 19011. Findings were classified as conforming, minor nonconformity, major nonconformity, observation or opportunity for improvement. As evidence is sampled, there is a residual risk that unexamined instances of the same conditions may exist.');
+  p('Document request: '+S.docs.filter(d=>d.got).length+' of '+S.docs.length+' requested documents and information items were received before or during the audit.');
+  /* 3 clause results */
+  h1('3. Management system requirements (clauses 4–10)');
+  const cb=plannedClauses().map(c=>{const f=getF('c',c.ref)||{};return[c.ref,c.title,f.st?ST[f.st].s:'Not audited',tr(f.rm||f.ev||'',200)]});
+  if(cb.length)tbl('Clause audit results',['Ref','Requirement','Status','Evidence / remarks'],cb,{didParseCell:pdfStatusColor});
+  else p('No clause sections selected in the audit plan.');
+  /* 4 findings */
+  h1('4. Findings — nonconformities, observations and improvements');
+  const fb=[];
+  items.forEach(i=>{const f=getF(i.kind,i.ref);if(f&&f.st&&NCSTATS.includes(f.st)){
+   const a=S.actions.find(x=>x.source===i.ref);
+   fb.push([(a?a.ref:'—'),i.ref+' '+i.title,ST[f.st].s,tr(f.rm||f.ev||'(no description recorded)',260),a?a.owner||'—':'—',a?a.due||'—':'—'])}});
+  if(fb.length)tbl('Findings register',['Action ref','Source','Type','Finding / evidence','Owner','Due'],fb,{didParseCell:pdfStatusColor});
+  else p('No nonconformities, observations or improvement opportunities were raised during this audit.');
+  /* 5 annex A */
+  h1('5. Annex A control results');
+  THEMELIST.forEach(t=>{
+   const cc=plannedControls().filter(c=>c.theme===t);
+   if(!cc.length)return;
+   const rows=cc.map(c=>{const f=getF('a',c.ref)||{};return[c.ref,c.title,f.st?ST[f.st].s:'Not audited',tr(f.rm||f.ev||'',170)]});
+   tbl(THEMES[t].n,['Ref','Control','Status','Evidence / remarks'],rows,{didParseCell:pdfStatusColor});
+  });
+  /* 6 actions */
+  h1('6. Corrective action plan');
+  if(S.actions.length){
+   tbl('Actions register',['Ref','Source','Type','Finding','Corrective action','Owner','Due','Prio','Status'],
+    S.actions.map(a=>[a.ref,a.source,a.type,tr(a.finding,110),tr(a.action,110),a.owner||'—',a.due||'—',a.prio,a.status]),{didParseCell:pdfStatusColor});
+  }else p('No corrective actions recorded.');
+  /* 7 conclusion & sign-off */
+  h1('7. Audit conclusion');
+  p(conclusionText(r));
+  ensure(130);
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.setTextColor(30);
+  doc.text('Lead auditor',MX,Y);doc.text('Representative of the auditee',PW/2+20,Y);Y+=34;
+  doc.setDrawColor(120);doc.line(MX,Y,MX+220,Y);doc.line(PW/2+20,Y,PW-40,Y);Y+=12;
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(90);
+  doc.text(pdfT('Name: '+(S.meta.lead||'')),MX,Y);doc.text('Name:',PW/2+20,Y);Y+=13;
+  doc.text('Signature / date',MX,Y);doc.text('Signature / date',PW/2+20,Y);
+  /* footers */
+  const pages=doc.getNumberOfPages();
+  for(let i=2;i<=pages;i++){
+   doc.setPage(i);
+   doc.setDrawColor(200,210,222);doc.setLineWidth(0.5);doc.line(MX,800,PW-MX,800);
+   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(110);
+   doc.text(pdfT(co+' — ISO/IEC 27001:2022 audit report '+ref+' · '+(S.meta.conf||'Confidential')),MX,812);
+   doc.text('Page '+i+' of '+pages,PW-MX,812,{align:'right'});
+  }
+  doc.save('iso27001-audit-'+fileSlug()+'-'+todayISO()+'.pdf');
+  toast('PDF report generated');
+ }catch(e){console.error(e);alert('PDF generation failed ('+e.message+') — opening a printable report instead.');printFallback()}
+}
+function printFallback(){
+ const items=allPlanned();const r=statCounts(items);
+ const esc=escT;const co=esc(S.meta.company||'(unnamed auditee)');
+ const table=(head,rows)=>'<table><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+ let body='<h1>ISO/IEC 27001:2022 audit report — '+co+'</h1>';
+ body+='<p><b>Reference:</b> '+esc(S.meta.ref)+' · <b>Type:</b> '+esc(S.meta.type)+' · <b>Dates:</b> '+fmtDate(S.meta.start)+' – '+fmtDate(S.meta.end)+' · <b>Lead auditor:</b> '+esc(S.meta.lead)+'</p>';
+ body+='<p><b>Conclusion:</b> '+esc(conclusionText(r))+'</p>';
+ body+=table(['Result','Count'],[['Items in scope',r.total],['Audited',r.audited],['Conformity',r.pct===null?'—':r.pct+'%']].concat(ORDER.map(k=>[ST[k].l,r[k]])));
+ const cb=plannedClauses().map(c=>{const f=getF('c',c.ref)||{};return[c.ref,c.title,f.st?ST[f.st].s:'Not audited',tr(f.rm||f.ev,120)]});
+ if(cb.length)body+='<h2>Clauses 4–10</h2>'+table(['Ref','Requirement','Status','Remarks'],cb);
+ const ab=plannedControls().map(c=>{const f=getF('a',c.ref)||{};return[c.ref,THEMES[c.theme].s,c.title,f.st?ST[f.st].s:'Not audited',tr(f.rm||f.ev,120)]});
+ if(ab.length)body+='<h2>Annex A controls</h2>'+table(['Ref','Theme','Control','Status','Remarks'],ab);
+ if(S.actions.length)body+='<h2>Corrective actions</h2>'+table(['Ref','Source','Type','Finding','Owner','Due','Status'],S.actions.map(a=>[a.ref,a.source,a.type,tr(a.finding,120),a.owner,a.due,a.status]));
+ const w=window.open('','_blank');
+ if(!w){alert('Allow pop-ups to print the report, or use the Excel export.');return}
+ w.document.write('<html><head><title>ISO 27001 audit report</title><style>body{font-family:Arial,sans-serif;font-size:11px;color:#1e293b}h1{font-size:18px;color:#16324f}h2{font-size:14px;color:#16324f}table{border-collapse:collapse;width:100%;margin-bottom:14px}th,td{border:1px solid #cbd5e1;padding:4px 6px;text-align:left;vertical-align:top}th{background:#16324f;color:#fff}</style></head><body>'+body+'<p><b>Audit conclusion:</b> '+esc(conclusionText(r))+'</p><script>setTimeout(function(){window.print()},300)<\/script></body></html>');
+ w.document.close();
+}
+function criteriaText(){
+ const secs=SECLIST.filter(s=>S.scope.secs[s]);
+ const th=THEMELIST.filter(t=>S.scope.themes[t]).map(t=>THEMES[t].n);
+ return 'ISO/IEC 27001:2022 clauses '+secs.join(', ')+'; Annex A: '+th.join(', ')+' ('+plannedControls().length+' controls in scope per the Statement of Applicability).';
+}
+function conclusionText(r){
+ if(r.total===0)return 'No items have been audited yet; this report reflects the audit plan only. Complete the audit execution, then generate the final report.';
+ if(r.major>0)return 'The audit identified '+r.major+' major and '+r.minor+' minor nonconformity(ies). Major nonconformities must be corrected and their effectiveness verified before a conformity recommendation can be made.';
+ if(r.minor>0)return 'The audit identified '+r.minor+' minor nonconformity(ies) and no major nonconformities. Conformity is achievable subject to effective corrective action within the agreed timeframe.';
+ return 'The audit identified no nonconformities. Observations and opportunities for improvement raised should be considered in the continual improvement of the ISMS.';
+}
+/* ================= demo data ================= */
+function demoState(){
+ const s=blankState();
+ s.meta={company:'Meridian Cloud Services Ltd.',industry:'SaaS / cloud software',ref:'IA-2026-11',type:'Internal audit',
+  sites:'Cape Town HQ (R&D, corporate IT, support); AWS eu-west-1 (cloud IaaS)',start:'2026-11-23',end:'2026-11-27',
+  lead:'A. Naicker (Lead ISMS auditor)',team:'T. Mokoena (IT operations), S. Vermeulen (HR & facilities)',
+  scope:'Design, development and operation of the MeridianCloud SaaS platform and supporting corporate IT services, delivered from the Cape Town office and cloud infrastructure hosted in AWS eu-west-1.',
+  objectives:'Assess ISMS conformity with ISO/IEC 27001:2022 ahead of the recertification audit; verify that controls operate effectively across the platform and corporate IT; identify improvement opportunities.',
+  conf:'Confidential',distr:'CISO, ISMS Manager, Executive Committee',reportDate:'2026-12-04'};
+ s.soa={'7.6':{app:false,just:'No dedicated high-security rooms exist; open-plan office only, perimeters covered by 7.1–7.4.'},
+  '8.30':{app:false,just:'All software development is performed in-house; no outsourced development.'}};
+ const conf=['5.1','5.2','5.3','5.4','5.5','5.8','5.9','5.10','5.12','5.13','5.15','5.16','5.17','5.18','5.24','5.26','5.31','5.32','5.33','5.34','5.35','5.36','5.37','6.1','6.2','6.4','6.5','6.6','6.7','6.8','7.1','7.2','7.3','7.4','7.5','7.7','7.8','7.9','7.10','7.11','7.13','7.14','8.1','8.2','8.3','8.4','8.5','8.6','8.7','8.9','8.10','8.11','8.14','8.17','8.18','8.19','8.20','8.21','8.22','8.23','8.25','8.26','8.27','8.31','8.32','8.34'];
+ conf.forEach(r=>{s.findings[r]={st:'conform',ev:'Documents reviewed and sampled operationally; no exceptions noted.',rm:'',by:'A. Naicker',dt:'2026-11-24'}});
+ const F=s.findings;
+ F['5.7']={st:'conform',ev:'Threat-intel feed reviewed monthly; three advisories traced into patching decisions (ticket #1428).',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ F['5.11']={st:'conform',ev:'10 sampled leavers: asset return and access revocation evidenced in HR offboarding checklist.',rm:'',by:'S. Vermeulen',dt:'2026-11-24'};
+ F['5.14']={st:'conform',ev:'TLS enforced on mail/SFTP; DPA and transfer rules in the security annex of customer contracts.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ F['5.19']={st:'obs',ev:'Supplier register maintained with criticality ratings and annual review dates.',rm:'Two critical suppliers (cloud DNS, payroll) renewed in 2025 without a security annex; renewals due 2027. Not a nonconformity today, monitor at next audit.',by:'A. Naicker',dt:'2026-11-25'};
+ F['5.20']={st:'obs',ev:'Standard supplier contract template includes ISO 27001 security annex and audit right.',rm:'Align the two legacy contracts noted under 5.19 at renewal.',by:'A. Naicker',dt:'2026-11-25'};
+ F['5.21']={st:'conform',ev:'AWS and CDN subprocessors listed with security requirements cascaded via master agreement §7.',rm:'',by:'T. Mokoena',dt:'2026-11-25'};
+ F['5.22']={st:'conform',ev:'Quarterly supplier review minutes (Aug + Nov 2026) cover SLA and incident statistics.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ F['5.23']={st:'conform',ev:'Cloud services policy; new AWS region use approved via change request CR-2026-31 with exit plan.',rm:'',by:'T. Mokoena',dt:'2026-11-25'};
+ F['5.25']={st:'conform',ev:'Sampled 8 of 34 events in the SOC log: triaged and classified within target times.',rm:'',by:'T. Mokoena',dt:'2026-11-25'};
+ F['5.27']={st:'conform',ev:'Post-incident review for INC-2026-14 produced two control updates (tracked to closure).',rm:'',by:'T. Mokoena',dt:'2026-11-25'};
+ F['5.28']={st:'conform',ev:'Evidence-handling procedure v2.1; chain-of-custody form used in the May 2026 HR investigation.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ F['5.29']={st:'conform',ev:'BCP includes security controls to maintain during disruption (§5: access, logging, change freeze).',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['5.30']={st:'conform',ev:'DR failover test 2026-09-12 met RTO 2h/RPO 15min for the platform; report signed by CTO.',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['6.3']={st:'minor',ev:'LMS completion report: 78% completion vs 100% target; 14 staff joined >30 days ago without the onboarding module.',rm:'Awareness training completion below the 100% target defined in the training plan. Requirement: competence and awareness programme per clause 7.3 and internal target.',by:'S. Vermeulen',dt:'2026-11-24'};
+ F['7.6']={st:'na',ev:'',rm:'Control not applicable per SoA.',by:'A. Naicker',dt:'2026-11-24'};
+ F['7.12']={st:'conform',ev:'Server room walkthrough: cabling armoured and labelled; patch cabinet locked; segregation power/data visible.',rm:'',by:'T. Mokoena',dt:'2026-11-24'};
+ F['8.8']={st:'minor',ev:'Monthly Tenable scans performed. 12 high-severity findings open >90 days (oldest 2026-05-30) against a 30-day SLA.',rm:'Remediation SLA defined (30 days high) but not enforced; no exception/acceptance recorded for overdue items. Requirement: 8.8 + risk treatment decisions.',by:'T. Mokoena',dt:'2026-11-25'};
+ F['8.12']={st:'conform',ev:'DLP policies active on mail and endpoints; blocked-egress report reviewed monthly by CISO.',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['8.13']={st:'conform',ev:'Backups: daily incremental, weekly full; restore test 2026-10-02 passed (random 10 files + full DB).',rm:'',by:'T. Mokoena',dt:'2026-11-25'};
+ F['8.15']={st:'ofi',ev:'Logs centralised (ELK), 90-day retention, access restricted to SOC.',rm:'Retention beyond 90 days would enable annual trend analysis required by 9.1 metrics; suggest extending to 12 months for authentication logs.',by:'T. Mokoena',dt:'2026-11-26'};
+ F['8.16']={st:'conform',ev:'SIEM alerts 24/7 follow-the-sun; sampled anomalies documented with triage outcomes.',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['8.24']={st:'conform',ev:'Crypto policy lists approved algorithms; KMS key rotation evidenced (12 months, automatic).',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['8.28']={st:'conform',ev:'Secure coding standard v3; SonarQube gate blocks merges with critical findings; 3 sampled PRs show review.',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ F['8.29']={st:'conform',ev:'SAST on every build; annual pen test 2026-07 by external lab; 4 findings closed with retest evidence.',rm:'',by:'T. Mokoena',dt:'2026-11-27'};
+ F['8.30']={st:'na',ev:'',rm:'Control not applicable per SoA.',by:'A. Naicker',dt:'2026-11-26'};
+ F['8.33']={st:'conform',ev:'Staging uses masked dataset generated by the anonymisation pipeline (no raw PII).',rm:'',by:'T. Mokoena',dt:'2026-11-26'};
+ const CF=s.cfindings;
+ CF['4.1']={st:'conform',ev:'ISMS manual §2 context analysis updated 2026-06; SWOT and regulatory inputs present.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['4.2']={st:'conform',ev:'Interested-party register with requirements mapped to controls.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['4.3']={st:'conform',ev:'Scope statement documented and justified; cloud and corporate IT included.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['4.4']={st:'conform',ev:'ISMS processes mapped and owned; improvement log active.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['5.1']={st:'conform',ev:'CISO steering committee minutes monthly; budget approved 2026-06.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['5.2']={st:'conform',ev:'InfoSec policy v5 signed by CEO, displayed on intranet; staff sampled could locate it.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['5.3']={st:'conform',ev:'Roles matrix approved; risk-acceptance authority delegated to risk owners in writing.',rm:'',by:'A. Naicker',dt:'2026-11-23'};
+ CF['6.1.1']={st:'conform',ev:'Risk & opportunity register reviewed quarterly; actions tracked.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['6.1.2']={st:'conform',ev:'Risk methodology v2 defines 5x5 matrix, acceptance criteria; 2026 assessment (May) results consistent.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['6.1.3']={st:'conform',ev:'SoA dated 2026-06-30; residual risks signed by owners; treatments linked to controls.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['6.2']={st:'conform',ev:'5 objectives with metrics and owners; Q3 scorecard shows 4 on track, 1 amber with plan.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['6.3']={st:'conform',ev:'Changes handled through CR process incl. ISMS changes (ref CR-2026-31).',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['7.1']={st:'conform',ev:'ISMS budget line 2026; SOC staffing filled.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['7.2']={st:'conform',ev:'Competence matrix; auditors trained ISO 27001 lead auditor; SOC staff certifications current.',rm:'',by:'S. Vermeulen',dt:'2026-11-24'};
+ CF['7.3']={st:'minor',ev:'Same finding as Annex A 6.3: awareness completion at 78% vs 100% target.',rm:'Linked to Annex A control 6.3 finding.',by:'S. Vermeulen',dt:'2026-11-24'};
+ CF['7.4']={st:'conform',ev:'Communication matrix defines what/when/whom/how; customer security bulletins issued quarterly.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['7.5']={st:'conform',ev:'Document register with version control; 2 obsolete documents correctly archived.',rm:'',by:'A. Naicker',dt:'2026-11-24'};
+ CF['8.1']={st:'conform',ev:'Operational criteria in runbooks; outsourced payroll process controlled via supplier review.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ CF['8.2']={st:'conform',ev:'Risk assessment repeated 2026-05 (annual cycle) and after the data-centre change; comparable outputs.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ CF['8.3']={st:'conform',ev:'Treatment plan actions 92% closed; residual risks as accepted.',rm:'',by:'A. Naicker',dt:'2026-11-25'};
+ CF['9.1']={st:'conform',ev:'Metrics catalogue defines measures, frequency and methods; Q3 evaluation reported to mgmt review.',rm:'',by:'A. Naicker',dt:'2026-11-26'};
+ CF['9.2']={st:'major',ev:'ISMS manual §9 requires two internal audits per year. No internal audits performed in the last 12 months; audit tracker for 2026 empty; last report dated 2025-08-14.',rm:'Absence of a planned internal audit programme breaches clause 9.2 and undermines the ISMS performance-evaluation cycle.',by:'A. Naicker',dt:'2026-11-26'};
+ CF['9.3']={st:'conform',ev:'Management review 2026-10-08: required inputs/outputs present, decisions logged with owners.',rm:'',by:'A. Naicker',dt:'2026-11-26'};
+ CF['10.1']={st:'conform',ev:'Improvement log shows 12 items in 2026 with 9 closed; trend analysis presented at review.',rm:'',by:'A. Naicker',dt:'2026-11-26'};
+ CF['10.2']={st:'minor',ev:'NC register used, but 2 of 6 sampled corrective actions lack effectiveness verification before closure.',rm:'Corrective-action process not fully effective (linked to vulnerability SLA breach under 8.8).',by:'A. Naicker',dt:'2026-11-26'};
+ s.docs=DOCS.map((t,i)=>({t:t,got:i<22,note:i<22?'Received '+(i%3===0?'2026-11-10':'2026-11-12'):'Requested 2026-11-12 — follow up'}));
+ s.docs[16].note='Received; 12 high vulns overdue — see finding 8.8';
+ s.docs[17].note='Backup policy received; Q4 restore test pending';
+ s.actions=[
+  {id:'d1',ref:'NC-01',source:'9.2',type:'Major NC',finding:'Internal audit programme not executed in the last 12 months (clause 9.2).',action:'Perform two internal audits covering all clauses and applicable controls; train two internal auditors; report results to management review.',owner:'ISMS Manager (R. Pillay)',due:'2027-01-31',prio:'Critical',status:'Open',verify:''},
+  {id:'d2',ref:'NC-02',source:'8.8',type:'Minor NC',finding:'12 high-severity vulnerabilities overdue beyond the 30-day SLA without documented risk acceptance.',action:'Clear backlog against 30-day SLA; implement weekly SLA report; require formal risk acceptance for exceptions.',owner:'Head of IT Ops (T. Mokoena)',due:'2027-01-15',prio:'High',status:'In progress',verify:'Verify scan export shows zero overdue highs'},
+  {id:'d3',ref:'NC-03',source:'6.3',type:'Minor NC',finding:'Awareness training completion 78% vs 100% target; new joiners onboard late.',action:'Auto-enrol new joiners on day 1; weekly completion report to line managers; reach 100% by 31 Jan 2027.',owner:'HR Manager (S. Vermeulen)',due:'2027-01-31',prio:'Medium',status:'Open',verify:''},
+  {id:'d4',ref:'OBS-01',source:'10.2',type:'Observation',finding:'Effectiveness verification missing for 2 of 6 sampled corrective actions before closure.',action:'Add mandatory effectiveness-check field to the NC workflow; retrain action owners.',owner:'ISMS Manager (R. Pillay)',due:'2026-12-20',prio:'Low',status:'Closed',verify:'Workflow updated 2026-12-05; sampled new NCs carry checks'},
+  {id:'d5',ref:'OBS-02',source:'5.19',type:'Observation',finding:'Two critical supplier contracts lack the security annex (renewal 2027).',action:'Add security annex at 2027 renewals; interim risk accepted in supplier review 2026-11.',owner:'Procurement (J. Adams)',due:'2027-06-30',prio:'Low',status:'Open',verify:''},
+  {id:'d6',ref:'OFI-01',source:'8.15',type:'OFI',finding:'Log retention of 90 days limits annual trend analysis.',action:'Extend authentication log retention to 12 months in the SIEM lifecycle policy.',owner:'SOC Lead (M. du Toit)',due:'2027-02-28',prio:'Low',status:'Open',verify:''}
+ ];
+ return s;
+}
+/* ================= wiring & init ================= */
+function wire(){
+ document.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+ for(const id in METAMAP){const el=document.getElementById(id);if(el)el.addEventListener('input',()=>{S.meta[METAMAP[id]]=el.value;save();if(id==='m_company')$('#projTag').textContent='— '+(el.value||'new audit')})}
+ $('#scopeSecs').addEventListener('change',e=>{const s=e.target.dataset.sec;if(s){S.scope.secs[s]=e.target.checked;save();renderScopeNote();renderSoa()}});
+ $('#scopeThemes').addEventListener('change',e=>{const t=e.target.dataset.thm;if(t){S.scope.themes[t]=e.target.checked;save();renderScopeNote();renderSoa();if(audMode==='a')renderAudit()}});
+ $('#soaTheme').addEventListener('change',e=>{soaF.theme=e.target.value;renderSoa()});
+ $('#soaSearch').addEventListener('input',e=>{soaF.q=e.target.value;renderSoa()});
+ $('#soaAllYes').addEventListener('click',()=>bulkSoa(true));
+ $('#soaAllNo').addEventListener('click',()=>bulkSoa(false));
+ $('#soaBody').addEventListener('click',e=>{const b=e.target.closest('[data-app]');if(!b)return;
+  const tr=b.closest('tr'),ref=tr.dataset.sref,v=b.dataset.app==='1';
+  const cur=S.soa[ref]||{};const next=cur.app===v?null:{app:v,just:v?(cur.just||''):(cur.just||'')};
+  if(next)S.soa[ref]=next;else delete S.soa[ref];
+  save();renderSoa();if(audMode==='a')renderAudit();});
+ $('#soaBody').addEventListener('input',e=>{const i=e.target.closest('[data-jf]');if(!i)return;
+  const ref=i.closest('tr').dataset.sref;const cur=S.soa[ref]||{app:false};cur.just=i.value;S.soa[ref]=cur;save();});
+ $('#docsBody').addEventListener('change',e=>{const d=e.target.dataset.df;if(d!=='got')return;S.docs[+e.target.dataset.di].got=e.target.checked;save()});
+ $('#docsBody').addEventListener('input',e=>{const d=e.target.dataset.df;if(d!=='note')return;S.docs[+e.target.dataset.di].note=e.target.value;save()});
+ $('#docAddBtn').addEventListener('click',()=>{const v=$('#docNew').value.trim();if(!v)return;S.docs.push({t:v,got:false,note:''});$('#docNew').value='';save();renderDocs();toast('Document request added')});
+ $('#btnGoAudit').addEventListener('click',()=>setTab('audit'));
+ /* audit */
+ $('#modeClauses').addEventListener('click',()=>{audMode='c';segMode();renderAudit()});
+ $('#modeControls').addEventListener('click',()=>{audMode='a';segMode();renderAudit()});
+ $('#audTheme').addEventListener('change',e=>{audFlt.theme=e.target.value;renderAudit()});
+ $('#audStatus').addEventListener('change',e=>{audFlt.st=e.target.value;renderAudit()});
+ $('#audSearch').addEventListener('input',e=>{audFlt.q=e.target.value;renderAudit()});
+ $('#audHideDone').addEventListener('change',e=>{audHideDone=e.target.checked;renderAudit()});
+ $('#audExpand').addEventListener('click',()=>{plannedItems().forEach(i=>audOpen[i.ref]=true);renderAudit()});
+ $('#audCollapse').addEventListener('click',()=>{audOpen={};renderAudit()});
+ $('#audList').addEventListener('click',e=>{
+  const row=e.target.closest('.aitem');if(!row)return;
+  const kind=row.dataset.kind,ref=row.dataset.ref;
+  const pill=e.target.closest('.pill');
+  if(pill){const f=ensureF(kind,ref);f.st=(f.st===pill.dataset.st)?'':pill.dataset.st;save();updateRowUI(row);
+   renderAudProgress(plannedItems());return}
+  if(e.target.closest('[data-raise]')){raiseAction(kind,ref);return}
+  if(e.target.closest('textarea,input'))return;
+  const det=row.querySelector('.adetail');audOpen[ref]=det.classList.contains('hide');
+  det.classList.toggle('hide');row.querySelector('.chev').textContent=det.classList.contains('hide')?'▸':'▾';
+ });
+ $('#audList').addEventListener('input',e=>{
+  const el=e.target.closest('[data-f]');if(!el)return;
+  const row=e.target.closest('.aitem');const f=ensureF(row.dataset.kind,row.dataset.ref);
+  f[el.dataset.f]=el.value;save();
+ });
+ /* actions */
+ $('#actSuggest').addEventListener('click',suggestActions);
+ $('#actAdd').addEventListener('click',()=>{S.actions.push(newAction('—','','',''));save();renderActions()});
+ $('#actBody').addEventListener('input',e=>{const el=e.target.closest('[data-k]');if(!el)return;
+  const a=S.actions.find(x=>x.id===el.closest('tr').dataset.aid);if(a){a[el.dataset.k]=el.value;save()}});
+ $('#actBody').addEventListener('change',e=>{const el=e.target.closest('[data-k]');if(!el)return;
+  const a=S.actions.find(x=>x.id===el.closest('tr').dataset.aid);if(a){a[el.dataset.k]=el.value;save()}});
+ $('#actBody').addEventListener('click',e=>{const del=e.target.closest('[data-del]');if(!del)return;
+  const id=e.target.closest('tr').dataset.aid;S.actions=S.actions.filter(a=>a.id!==id);save();renderActions();toast('Action deleted')});
+ /* report + global */
+ $('#btnPdf').addEventListener('click',buildPdf);
+ $('#btnXlsx').addEventListener('click',downloadXlsx);
+ $('#btnExportJson').addEventListener('click',()=>{dl('iso27001-audit-project-'+fileSlug()+'-'+todayISO()+'.json',new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));toast('Project exported as JSON')});
+ $('#btnImport').addEventListener('click',()=>$('#fileImport').click());
+ $('#fileImport').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const o=JSON.parse(rd.result);if(!o||o.v!==1||!o.meta)throw new Error('Not a valid project file');
+   S=o;save();renderPlan();setTab('plan');$('#projTag').textContent='— '+(S.meta.company||'new audit');toast('Project imported')}catch(err){alert('Import failed: '+err.message)}};
+  rd.readAsText(f);e.target.value='';
+ });
+ $('#btnNew').addEventListener('click',()=>{if(confirm('Start a NEW audit? Current data will be replaced (export first if needed).')){S=blankState();save();renderPlan();renderActions();setTab('plan');$('#projTag').textContent='— new audit';toast('New blank audit started')}});
+ $('#btnDemo').addEventListener('click',()=>{if(confirm('Load the demo audit? Current data will be replaced (export first if needed).')){S=demoState();save();renderPlan();renderActions();setTab('report');$('#projTag').textContent='— '+(S.meta.company||'new audit');toast('Demo audit loaded — explore Plan, Audit and Report')}});
+ $('#btnHelp').addEventListener('click',()=>{$('#modal').hidden=false});
+ $('#modalClose').addEventListener('click',()=>{$('#modal').hidden=true});
+ $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')$('#modal').hidden=true});
+}
+function segMode(){$('#modeClauses').classList.toggle('on',audMode==='c');$('#modeControls').classList.toggle('on',audMode==='a');$('#audTheme').disabled=(audMode==='c')}
+function bulkSoa(v){
+ let list=plannedControls();
+ if(soaF.theme!=='all')list=list.filter(c=>c.theme===soaF.theme);
+ if(soaF.q)list=list.filter(c=>(c.ref+' '+c.title).toLowerCase().includes(soaF.q.toLowerCase()));
+ list.forEach(c=>{S.soa[c.ref]={app:v,just:S.soa[c.ref]?S.soa[c.ref].just||'':''}});
+ save();renderSoa();toast(list.length+' controls marked '+(v?'applicable':'N/A')+' (justifications still needed for N/A)');
+}
+function init(){
+ S=loadState();
+ if(!S)S=blankState();
+ wire();renderPlan();renderActions();segMode();
+ $('#projTag').textContent='— '+(S.meta.company||'new audit');
+ saveLabel('Loaded');setTab('plan');
+}
+init();
+</script>
+</body>
+</html>
